@@ -1,10 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/labstack/echo"
 	"gorm.io/driver/mysql"
@@ -13,23 +14,32 @@ import (
 
 var DB *gorm.DB
 
-type Medicines struct {
-	ID          int       `gorm:"primaryKey" json:"id" form:"id"`
-	Name        string    `json:"name" form:"name"`
-	Detail      string    `json:"detail" form:"detail"`
-	Dose        string    `json:"dose" form:"dose"`
-	Side_Effect string    `json:"side_effect" form:"side_effect"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+type Response struct {
+	Message Message `json:"message"`
+}
+type Message struct {
+	Body Body `json:"body"`
+}
+type Body struct {
+	TrackList []TrackList `json:"track_list"`
+}
+type TrackList struct {
+	Track Track `json:"track"`
+}
+type Track struct {
+	TrackID    int    `json:"track_id"`
+	TrackName  string `json:"track_name"`
+	AlbumName  string `json:"album_name"`
+	ArtistName string `json:"artist_name"`
 }
 
 func InitDB() {
 	config := map[string]string{
-		"DB_Username": "root",
+		"DB_Username": "heinz",
 		"DB_Password": "",
 		"DB_Port":     "3306",
 		"DB_Host":     "127.0.0.1",
-		"DB_Name":     "find_medicines",
+		"DB_Name":     "ez_musix",
 	}
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", config["DB_Username"], config["DB_Password"], config["DB_Host"], config["DB_Port"], config["DB_Name"])
 	var err error
@@ -41,79 +51,71 @@ func InitDB() {
 }
 
 func InitMigrate() {
-	DB.AutoMigrate(&Medicines{})
+	DB.AutoMigrate(&Track{})
 }
 
 func main() {
 	InitDB()
 	e := echo.New()
-	g := e.Group("/medicines")
-	g.POST("", AddMedicines)
-	g.GET("", GetMedicines)
-	g.PUT("/:id", UpdateMedicines)
-	g.DELETE("/:id", DeleteMedicines)
+	g := e.Group("/tracks")
+	g.POST("", AddTrack)
+	g.GET("", GetTrack)
+	g.DELETE("/:trackId", DeleteTrack)
 	e.Start(":8000")
 }
 
-func AddMedicines(c echo.Context) error {
-	medicines := Medicines{}
-	if e := c.Bind(&medicines); e != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"msg": "failed",
-		})
-	}
-	if err := DB.Create(&medicines).Error; err != nil {
+func Search(track, artist string) Track {
+	const API_KEY = "4b69788a296733b380069f770a174a89"
+	var url = fmt.Sprintf("http://api.musixmatch.com/ws/1.1/track.search?apikey=%s&page_size=1&q_track=%s&q_artist=%s", API_KEY, track, artist)
+	res, _ := http.Get(url)
+	responseData, _ := ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+	var responseObject Response
+	json.Unmarshal(responseData, &responseObject)
+	return responseObject.Message.Body.TrackList[0].Track
+}
+
+func AddTrack(c echo.Context) error {
+	track := c.FormValue("q_track")
+	artist := c.FormValue("q_artist")
+	var newTrack Track
+	newTrack = Search(track, artist)
+	if err := DB.Create(&newTrack).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"msg": "failed",
 		})
 	}
 	return c.JSON(http.StatusCreated, echo.Map{
 		"msg":  "Success",
-		"data": medicines,
+		"data": newTrack,
 	})
 }
 
-func GetMedicines(c echo.Context) error {
-	medicines := Medicines{}
-	if err := DB.Find(&medicines).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"msg": "failed",
-		})
-	}
-	if medicines.ID == 0 {
-		return c.JSON(http.StatusFound, echo.Map{
-			"msg": "Empty",
+func GetTrack(c echo.Context) error {
+	track := c.QueryParam("q_track")
+	artist := c.QueryParam("q_artist")
+	if track == "" && artist == "" {
+		track := []Track{}
+		if err := DB.Find(&track).Error; err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"msg": "failed",
+			})
+		}
+		return c.JSON(http.StatusOK, echo.Map{
+			"msg":  "Success",
+			"data": track,
 		})
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"msg":  "Success",
-		"data": medicines,
+		"data": Search(track, artist),
 	})
 }
 
-func UpdateMedicines(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	medicines := Medicines{}
-	if err := DB.Where("id=?", id).First(&medicines).Error; err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"msg": "ID not found",
-		})
-	}
-	c.Bind(&medicines)
-	if err := DB.Where("id=?", id).Updates(&medicines).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"msg": "failed",
-		})
-	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"msg": "Success",
-	})
-}
-
-func DeleteMedicines(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	medicines := Medicines{}
-	if err := DB.Where("id = ?", id).Delete(&medicines).Error; err != nil {
+func DeleteTrack(c echo.Context) error {
+	trackId, _ := strconv.Atoi(c.Param("trackId"))
+	track := Track{}
+	if err := DB.Where("track_id = ?", trackId).Delete(&track).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"msg": "failed",
 		})
