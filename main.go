@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo"
 	"gorm.io/driver/mysql"
@@ -27,10 +28,16 @@ type TrackList struct {
 	Track Track `json:"track"`
 }
 type Track struct {
-	TrackID    int    `json:"track_id"`
-	TrackName  string `json:"track_name"`
+	Id         int    `gorm:"primarykey" json:"track_id"`
+	Name       string `json:"track_name"`
 	AlbumName  string `json:"album_name"`
 	ArtistName string `json:"artist_name"`
+}
+
+type Playlist struct {
+	Id     int     `gorm:"primaryKey" json:"id"`
+	Name   string  `json:"name"`
+	Tracks []Track `gorm:"many2many:detail_playlist"`
 }
 
 func InitDB() {
@@ -51,44 +58,51 @@ func InitDB() {
 }
 
 func InitMigrate() {
-	DB.AutoMigrate(&Track{})
+	DB.AutoMigrate(&Track{}, &Playlist{})
 }
 
 func main() {
 	InitDB()
 	e := echo.New()
 	g := e.Group("/tracks")
-	g.POST("", AddTrack)
 	g.GET("", GetTrack)
 	g.DELETE("/:trackId", DeleteTrack)
-	e.Start(":8000")
+
+	p := e.Group("/playlists")
+	p.POST("", AddPlaylist)
+	p.GET("", GetPlaylist)
+
+	tp := e.Group("/detailPlaylist")
+	tp.POST("", AddDetailPlaylist)
+
+	e.Logger.Fatal(e.Start(":8000"))
 }
 
-func Search(track, artist string) Track {
+func AddDetailPlaylist(c echo.Context) error {
+	playlist := Playlist{}
+	playlistId, _ := strconv.Atoi(c.FormValue("playlist_id"))
+	track := c.FormValue("q_track")
+	artist := c.FormValue("q_artist")
+	var newTrack Track
+	newTrack = Search(track, artist)
+	DB.Where("id=?", playlistId).Find(&playlist).Association("Tracks").Append(&newTrack)
+	return c.JSON(http.StatusCreated, echo.Map{
+		"msg":  "Success",
+		"data": newTrack,
+	})
+}
+
+func Search(trackName, artistName string) Track {
 	const API_KEY = "4b69788a296733b380069f770a174a89"
-	var url = fmt.Sprintf("http://api.musixmatch.com/ws/1.1/track.search?apikey=%s&page_size=1&q_track=%s&q_artist=%s", API_KEY, track, artist)
+	trackName = strings.Replace(trackName, " ", "-", -1)
+	artistName = strings.Replace(artistName, " ", "-", -1)
+	var url = fmt.Sprintf(`http://api.musixmatch.com/ws/1.1/track.search?apikey=%s&page_size=1&q_track=%s&q_artist=%s`, API_KEY, trackName, artistName)
 	res, _ := http.Get(url)
 	responseData, _ := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 	var responseObject Response
 	json.Unmarshal(responseData, &responseObject)
 	return responseObject.Message.Body.TrackList[0].Track
-}
-
-func AddTrack(c echo.Context) error {
-	track := c.FormValue("q_track")
-	artist := c.FormValue("q_artist")
-	var newTrack Track
-	newTrack = Search(track, artist)
-	if err := DB.Create(&newTrack).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"msg": "failed",
-		})
-	}
-	return c.JSON(http.StatusCreated, echo.Map{
-		"msg":  "Success",
-		"data": newTrack,
-	})
 }
 
 func GetTrack(c echo.Context) error {
@@ -122,5 +136,32 @@ func DeleteTrack(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, echo.Map{
 		"msg": "Success",
+	})
+}
+
+func AddPlaylist(c echo.Context) error {
+	playlist := Playlist{}
+	c.Bind(&playlist)
+	if err := DB.Create(&playlist).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"msg": "failed",
+		})
+	}
+	return c.JSON(http.StatusCreated, echo.Map{
+		"msg":  "Success",
+		"data": playlist,
+	})
+}
+
+func GetPlaylist(c echo.Context) error {
+	playlist := Playlist{}
+	if err := DB.Preload("Tracks").Find(&playlist).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"msg": "failed",
+		})
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"msg":  "Success",
+		"data": playlist,
 	})
 }
