@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,8 +36,22 @@ type Track struct {
 
 type Playlist struct {
 	Id     int     `gorm:"primaryKey" json:"id"`
-	Name   string  `json:"name"`
-	Tracks []Track `gorm:"many2many:detail_playlist"`
+	Name   string  `json:"name" form:"name"`
+	UserID int     `json:"user_id" form:"user_id"`
+	Tracks []Track `gorm:"many2many:detail_playlist constraint:OnDelete:CASCADE"`
+}
+
+type DetailPlaylist struct {
+	PlaylistId int    `json:"playlist_id" form:"playlist_id"`
+	TrackName  string `json:"track_name" form:"track_name"`
+	ArtistName string `json:"artist_name" form:"artist_name"`
+}
+
+type User struct {
+	Id        int    `json:"id"`
+	Username  string `json:"username" form:"username"`
+	Password  string `json:"password" form:"password"`
+	Playlists []Playlist
 }
 
 func InitDB() {
@@ -58,12 +72,18 @@ func InitDB() {
 }
 
 func InitMigrate() {
-	DB.AutoMigrate(&Track{}, &Playlist{})
+	DB.AutoMigrate(&User{}, &Track{}, &Playlist{})
 }
 
 func main() {
 	InitDB()
 	e := echo.New()
+
+	u := e.Group("/users")
+	u.POST("/register", RegisterUser)
+	u.POST("/login", LoginUser)
+	u.GET("", GetUser)
+
 	g := e.Group("/tracks")
 	g.GET("", GetTrack)
 	g.DELETE("/:trackId", DeleteTrack)
@@ -71,25 +91,13 @@ func main() {
 	p := e.Group("/playlists")
 	p.POST("", AddPlaylist)
 	p.GET("", GetPlaylist)
+	p.DELETE("/:playlist_id", DeletePlaylist)
 
 	tp := e.Group("/detailPlaylist")
 	tp.POST("", AddDetailPlaylist)
+	tp.DELETE("/:playlist_id/:track_id", DeleteDetailPlaylist)
 
 	e.Logger.Fatal(e.Start(":8000"))
-}
-
-func AddDetailPlaylist(c echo.Context) error {
-	playlist := Playlist{}
-	playlistId, _ := strconv.Atoi(c.FormValue("playlist_id"))
-	track := c.FormValue("q_track")
-	artist := c.FormValue("q_artist")
-	var newTrack Track
-	newTrack = Search(track, artist)
-	DB.Where("id=?", playlistId).Find(&playlist).Association("Tracks").Append(&newTrack)
-	return c.JSON(http.StatusCreated, echo.Map{
-		"msg":  "Success",
-		"data": newTrack,
-	})
 }
 
 func Search(trackName, artistName string) Track {
@@ -105,9 +113,50 @@ func Search(trackName, artistName string) Track {
 	return responseObject.Message.Body.TrackList[0].Track
 }
 
+/*
+User Method
+*/
+func RegisterUser(c echo.Context) error {
+	user := User{}
+	c.Bind(&user)
+	if err := DB.Create(&user).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"msg": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusCreated, echo.Map{
+		"msg": "Success",
+	})
+}
+func LoginUser(c echo.Context) error {
+	user := User{}
+	c.Bind(&user)
+	if err := DB.Debug().Where("username=? AND password=?", user.Username, user.Password).First(&user).Error; err != nil {
+		return c.JSON(http.StatusOK, echo.Map{
+			"msg": err.Error(),
+		})
+	}
+	return c.JSON(http.StatusCreated, echo.Map{})
+}
+func GetUser(c echo.Context) error {
+	user := []User{}
+	if err := DB.Debug().Preload("Playlists").Find(&user).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"msg": "failed",
+		})
+	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"msg":  "Success",
+		"data": user,
+	})
+}
+
+/*
+Track Method
+*/
 func GetTrack(c echo.Context) error {
-	track := c.QueryParam("q_track")
-	artist := c.QueryParam("q_artist")
+	track := c.QueryParam("track_name")
+	artist := c.QueryParam("artist_name")
 	if track == "" && artist == "" {
 		track := []Track{}
 		if err := DB.Find(&track).Error; err != nil {
@@ -139,10 +188,13 @@ func DeleteTrack(c echo.Context) error {
 	})
 }
 
+/*
+Playlist Method
+*/
 func AddPlaylist(c echo.Context) error {
 	playlist := Playlist{}
 	c.Bind(&playlist)
-	if err := DB.Create(&playlist).Error; err != nil {
+	if err := DB.Debug().Create(&playlist).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"msg": "failed",
 		})
@@ -163,5 +215,37 @@ func GetPlaylist(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"msg":  "Success",
 		"data": playlist,
+	})
+}
+
+func DeletePlaylist(c echo.Context) error {
+	playlistId, _ := strconv.Atoi(c.Param("playlist_id"))
+	DB.Where("id=?", playlistId).Delete(&Playlist{})
+	return c.JSON(http.StatusOK, echo.Map{
+		"msg": "success",
+	})
+}
+
+/*
+DetailPlaylist Method
+*/
+func AddDetailPlaylist(c echo.Context) error {
+	detailPlaylist := DetailPlaylist{}
+	c.Bind(&detailPlaylist)
+	var newTrack Track
+	newTrack = Search(detailPlaylist.TrackName, detailPlaylist.ArtistName)
+	DB.Model(&Playlist{Id: detailPlaylist.PlaylistId}).Association("Tracks").Append(&newTrack)
+	return c.JSON(http.StatusCreated, echo.Map{
+		"msg":  "Success",
+		"data": newTrack,
+	})
+}
+
+func DeleteDetailPlaylist(c echo.Context) error {
+	playlistId, _ := strconv.Atoi(c.Param("playlist_id"))
+	trackId, _ := strconv.Atoi(c.Param("track_id"))
+	DB.Model(&Playlist{Id: playlistId}).Association("Tracks").Delete(&Track{Id: trackId})
+	return c.JSON(http.StatusOK, echo.Map{
+		"msg": "success",
 	})
 }
