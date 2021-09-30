@@ -28,10 +28,10 @@ type TrackList struct {
 	Track Track `json:"track"`
 }
 type Track struct {
-	Id         int    `gorm:"primarykey" json:"track_id"`
-	Name       string `json:"track_name"`
-	AlbumName  string `json:"album_name"`
-	ArtistName string `json:"artist_name"`
+	Id         int    `gorm:"primarykey" json:"track_id" form:"track_id"`
+	Name       string `json:"track_name" form:"track_name"`
+	AlbumName  string `json:"album_name" form:"album_name"`
+	ArtistName string `json:"artist_name" form:"artist_name"`
 }
 
 type Playlist struct {
