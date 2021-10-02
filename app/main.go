@@ -7,8 +7,6 @@ import (
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	"fmt"
 
-	trackRepo "EzMusix/repository/mysql/tracks"
-
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -31,8 +29,7 @@ func InitDB() *gorm.DB {
 	}
 
 	DB.AutoMigrate(
-		&playlistRepo.Playlist{},
-		&trackRepo.Track{},
+		&playlistRepo.PlaylistRepo{},
 	)
 
 	return DB
