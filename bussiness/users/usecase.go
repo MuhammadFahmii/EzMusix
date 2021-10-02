@@ -1,30 +1,40 @@
 package users
 
 import (
-	"context"
+	"EzMusix/app/middlewares"
 	"errors"
-	"time"
 )
 
 type UserUsecase struct {
-	userRepo       Repository
-	contextTimeout time.Duration
+	userRepo Repository
+	jwtAuth  *middlewares.ConfigJWT
 }
 
-func NewUserUsecase(repo Repository, timeOut time.Duration) Usecase {
+func NewUserUsecase(repo Repository, jwtAuth *middlewares.ConfigJWT) Usecase {
 	return &UserUsecase{
-		userRepo:       repo,
-		contextTimeout: timeOut,
+		userRepo: repo,
+		jwtAuth:  jwtAuth,
 	}
 }
-
-func (uc *UserUsecase) Login(ctx context.Context, email, password string) (Domain, error) {
-	if email == "" {
-		return Domain{}, errors.New("email empty")
+func (uc *UserUsecase) Register(usersDomain Domain) (Domain, error) {
+	if usersDomain.Username == "" {
+		return Domain{}, errors.New("Username empty")
 	}
-	user, err := uc.Login(ctx, email, password)
+	user, err := uc.userRepo.Register(usersDomain)
 	if err != nil {
 		return Domain{}, err
 	}
+	return user, nil
+}
+
+func (uc *UserUsecase) Login(usersDomain Domain) (Domain, error) {
+	if usersDomain.Username == "" || usersDomain.Password == "" {
+		return Domain{}, errors.New("Username or password is empty")
+	}
+	user, err := uc.userRepo.Login(usersDomain)
+	if err != nil {
+		return Domain{}, err
+	}
+	user.Token, err = uc.jwtAuth.GenerateToken(user.Id)
 	return user, nil
 }

@@ -1,22 +1,23 @@
 package users
 
 import (
-	"context"
+	"EzMusix/repository/mysql/playlist"
 )
 
 type Domain struct {
-	Id           int
-	Username     string
-	Password     string
-	Token        string
-	PlaylistId   int
-	PlaylistName string
+	Id        int
+	Username  string
+	Password  string
+	Token     string
+	Playlists []playlist.Playlist
 }
 
 type Usecase interface {
-	Login(ctx context.Context, email, password string) (Domain, error)
+	Register(Domain) (Domain, error)
+	Login(Domain) (Domain, error)
 }
 
 type Repository interface {
-	Login(ctx context.Context, email, password string) (Domain, error)
+	Register(Domain) (Domain, error)
+	Login(Domain) (Domain, error)
 }

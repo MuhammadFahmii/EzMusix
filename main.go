@@ -1,13 +1,18 @@
 package main
 
 import (
+	"EzMusix/app/middlewares"
 	playlistHandler "EzMusix/app/presenter/playlist"
+	tracksHandler "EzMusix/app/presenter/tracks"
+	usersHandler "EzMusix/app/presenter/users"
 	"EzMusix/app/routes"
 	playlistUsecase "EzMusix/bussiness/playlist"
+	tracksUsecase "EzMusix/bussiness/tracks"
+	usersUsecase "EzMusix/bussiness/users"
 	playlistRepo "EzMusix/repository/mysql/playlist"
+	usersRepo "EzMusix/repository/mysql/users"
+	trackRepo "EzMusix/repository/thirdparty"
 	"fmt"
-
-	trackRepo "EzMusix/repository/mysql/tracks"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/driver/mysql"
@@ -33,6 +38,7 @@ func InitDB() *gorm.DB {
 	DB.AutoMigrate(
 		&playlistRepo.Playlist{},
 		&trackRepo.Track{},
+		&usersRepo.User{},
 	)
 
 	return DB
@@ -41,11 +47,29 @@ func InitDB() *gorm.DB {
 func main() {
 	e := echo.New()
 	db := InitDB()
+	configJWT := middlewares.ConfigJWT{
+		SecretJWT:       "12345",
+		ExpiresDuration: 1,
+	}
+	// Users
+	usersRepo := usersRepo.NewUserRepo(db)
+	usersUsecase := usersUsecase.NewUserUsecase(usersRepo, &configJWT)
+	usersHandler := usersHandler.NewHandler(usersUsecase)
+
+	// Playlists
 	playlistRepo := playlistRepo.NewPlaylistRepo(db)
 	playlistUsecase := playlistUsecase.NewPlaylistUsecase(playlistRepo)
 	playlistHandler := playlistHandler.NewHandler(playlistUsecase)
+
+	// Tracks
+	tracksRepo := trackRepo.NewTracksRepo(db)
+	tracksUsecase := tracksUsecase.NewTracksUsecase(tracksRepo)
+	tracksHandler := tracksHandler.NewHandler(tracksUsecase)
 	routesInit := routes.HandlerList{
+		JWTMiddleware:   configJWT.Init(),
 		PlaylistHandler: *playlistHandler,
+		TrackHandler:    *tracksHandler,
+		UsersHandler:    *usersHandler,
 	}
 	routesInit.RouteRegister(e)
 	e.Start(":8000")
