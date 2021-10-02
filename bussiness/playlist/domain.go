@@ -1,18 +1,17 @@
 package playlist
 
-import "EzMusix/bussiness/tracks"
+import "EzMusix/repository/mysql/tracks"
 
-type Domain struct {
+type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []tracks.Domain
+	Tracks []tracks.Track `gorm:"many2many:detail_playlist"`
 }
-
 type Usecase interface {
-	Get(playlist *Domain) ([]Domain, error)
+	Get(playlist *Playlist) ([]*Playlist, error)
 }
 
 type Repository interface {
-	Get(playlist *Domain) ([]Domain, error)
+	Get(playlist *Playlist) ([]*Playlist, error)
 }

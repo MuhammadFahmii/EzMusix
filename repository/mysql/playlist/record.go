@@ -12,7 +12,7 @@ type Playlist struct {
 	Tracks []tracks.Track `gorm:"many2many:detail_playlist"`
 }
 
-func FromDomain(domain *playlist.Domain) Playlist {
+func FromDomain(domain *playlist.Playlist) Playlist {
 	return Playlist{
 		Id:     domain.Id,
 		Name:   domain.Name,
@@ -20,11 +20,11 @@ func FromDomain(domain *playlist.Domain) Playlist {
 	}
 }
 
-func ToDomain(pl *Playlist) playlist.Domain {
-	return playlist.Domain{
+func ToDomain(pl *Playlist) playlist.Playlist {
+	return playlist.Playlist{
 		Id:     pl.Id,
 		Name:   pl.Name,
 		UserID: pl.UserID,
-		// Tracks: pl.Tracks,
+		Tracks: pl.Tracks,
 	}
 }

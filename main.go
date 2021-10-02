@@ -48,5 +48,5 @@ func main() {
 		PlaylistHandler: *playlistHandler,
 	}
 	routesInit.RouteRegister(e)
-	e.Start(":8080")
+	e.Start(":8000")
 }

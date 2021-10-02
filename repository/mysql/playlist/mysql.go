@@ -16,10 +16,11 @@ func NewPlaylistRepo(db *gorm.DB) playlist.Repository {
 	}
 }
 
-func (repo *PlaylistRepo) Get(playlistDomain *playlist.Domain) ([]playlist.Domain, error) {
+func (repo *PlaylistRepo) Get(playlistDomain *playlist.Playlist) ([]*playlist.Playlist, error) {
 	if err := repo.DBConn.Preload("Tracks").Find(&playlistDomain).Error; err != nil {
-		return nil, err
+		return []*playlist.Playlist{}, err
 	}
-	pd := []playlist.Domain{}
-	return pd, nil
+	manyPlaylist := []*playlist.Playlist{}
+	manyPlaylist = append(manyPlaylist, playlistDomain)
+	return manyPlaylist, nil
 }

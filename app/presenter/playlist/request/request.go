@@ -7,8 +7,8 @@ type Playlist struct {
 	UserID int `json:"user_id"`
 }
 
-func ToDomain(pl Playlist) *playlist.Domain {
-	return &playlist.Domain{
+func ToDomain(pl Playlist) *playlist.Playlist {
+	return &playlist.Playlist{
 		Id:     pl.Id,
 		UserID: pl.UserID,
 	}

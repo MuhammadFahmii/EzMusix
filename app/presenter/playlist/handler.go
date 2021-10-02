@@ -20,9 +20,6 @@ func NewHandler(pl playlist.Usecase) *Presenter {
 
 func (presenter *Presenter) Get(c echo.Context) error {
 	reqPlaylist := request.Playlist{}
-	if err := c.Bind(&reqPlaylist); err != nil {
-		c.JSON(http.StatusBadRequest, "Something Wrong")
-	}
 	domain := request.ToDomain(reqPlaylist)
 	res, err := presenter.playlistUC.Get(domain)
 	if err != nil {

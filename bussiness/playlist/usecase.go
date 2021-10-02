@@ -10,10 +10,10 @@ func NewPlaylistUsecase(repo Repository) Usecase {
 	}
 }
 
-func (playlistUsecase *PlaylistUsecase) Get(playlist *Domain) ([]Domain, error) {
+func (playlistUsecase *PlaylistUsecase) Get(playlist *Playlist) ([]*Playlist, error) {
 	res, err := playlistUsecase.playlistRepo.Get(playlist)
 	if err != nil {
-		return []Domain{}, nil
+		return []*Playlist{}, nil
 	}
 	return res, nil
 }
