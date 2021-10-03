@@ -12,8 +12,8 @@ type User struct {
 	Playlists []playlist.Playlist
 }
 
-func (user *User) toDomain() users.Domain {
-	return users.Domain{
+func (user *User) toDomain() users.Users {
+	return users.Users{
 		Id:        user.Id,
 		Username:  user.Username,
 		Password:  user.Password,
@@ -21,11 +21,9 @@ func (user *User) toDomain() users.Domain {
 	}
 }
 
-func FromDomain(domain users.Domain) User {
+func FromDomain(users users.Users) User {
 	return User{
-		Id:        domain.Id,
-		Username:  domain.Username,
-		Password:  domain.Password,
-		Playlists: domain.Playlists,
+		Username: users.Username,
+		Password: users.Password,
 	}
 }

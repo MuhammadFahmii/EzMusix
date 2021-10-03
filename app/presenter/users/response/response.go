@@ -11,13 +11,13 @@ type UsersRegister struct {
 	Username string `json:"username"`
 }
 
-func FromUsersRegister(usersDomain users.Domain) UsersRegister {
+func FromUsersRegister(usersDomain users.Users) UsersRegister {
 	return UsersRegister{
 		Username: usersDomain.Username,
 	}
 }
 
-func FromUsersLogin(usersDomain users.Domain) Users {
+func FromUsersLogin(usersDomain users.Users) Users {
 	return Users{
 		Username: usersDomain.Username,
 		Token:    usersDomain.Token,

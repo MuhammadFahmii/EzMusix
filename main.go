@@ -38,7 +38,7 @@ func main() {
 	}
 	// Users
 	usersRepo := usersRepo.NewUserRepo(db)
-	usersUsecase := usersUsecase.NewUserUsecase(usersRepo, &configJWT)
+	usersUsecase := usersUsecase.NewUserUsecase(usersRepo)
 	usersHandler := usersHandler.NewHandler(usersUsecase)
 
 	// Playlists

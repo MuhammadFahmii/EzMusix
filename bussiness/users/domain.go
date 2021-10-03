@@ -4,7 +4,7 @@ import (
 	"EzMusix/repository/mysql/playlist"
 )
 
-type Domain struct {
+type Users struct {
 	Id        int
 	Username  string
 	Password  string
@@ -13,11 +13,11 @@ type Domain struct {
 }
 
 type Usecase interface {
-	Register(Domain) (Domain, error)
-	Login(Domain) (Domain, error)
+	Register(Users) (Users, error)
+	Login(Users) (Users, error)
 }
 
 type Repository interface {
-	Register(Domain) (Domain, error)
-	Login(Domain) (Domain, error)
+	Register(Users) (Users, error)
+	Login(Users) (Users, error)
 }
