@@ -1,8 +1,6 @@
 package thirdparty
 
-import (
-	"EzMusix/bussiness/tracks"
-)
+import "EzMusix/bussiness/tracks"
 
 type Response struct {
 	Message Message `json:"message"`
@@ -22,9 +20,15 @@ type Track struct {
 	ArtistName string `json:"artist_name"`
 	AlbumName  string `json:"album_name"`
 }
+type Playlist struct {
+	Id     int
+	Name   string
+	UserID int
+	Tracks []tracks.Track `gorm:"many2many:detail_playlist"`
+}
 
-func (pl *Response) toDomain() tracks.Domain {
-	return tracks.Domain{
+func (pl *Response) toDomain() tracks.Track {
+	return tracks.Track{
 		Id:         pl.Message.Body.TrackList[0].Track.Id,
 		Name:       pl.Message.Body.TrackList[0].Track.Name,
 		ArtistName: pl.Message.Body.TrackList[0].Track.ArtistName,

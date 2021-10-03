@@ -7,7 +7,17 @@ type Users struct {
 	Token    string `json:"token"`
 }
 
-func FromDomain(usersDomain users.Domain) Users {
+type UsersRegister struct {
+	Username string `json:"username"`
+}
+
+func FromUsersRegister(usersDomain users.Domain) UsersRegister {
+	return UsersRegister{
+		Username: usersDomain.Username,
+	}
+}
+
+func FromUsersLogin(usersDomain users.Domain) Users {
 	return Users{
 		Username: usersDomain.Username,
 		Token:    usersDomain.Token,

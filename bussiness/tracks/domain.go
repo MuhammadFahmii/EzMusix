@@ -1,16 +1,26 @@
 package tracks
 
-type Domain struct {
+type Track struct {
 	Id         int
 	Name       string
 	ArtistName string
 	AlbumName  string
 }
 
-type Usecase interface {
-	Get(track Domain) (Domain, error)
+type DetailPlaylist struct {
+	PlaylistId int
+	ArtistName string
+	TrackName  string
 }
 
-type Repository interface {
-	Get(track Domain) (Domain, error)
+type Usecase interface {
+	Get(trackName, artistName string) (Track, error)
+	AddDetailPlaylist(detailPlaylist DetailPlaylist) (Track, error)
+	DeleteDetailPlaylist(playlistId, trackId int) (DetailPlaylist, error)
+}
+
+type ThirdParty interface {
+	Get(trackName, artistName string) (Track, error)
+	AddDetailPlaylist(detailPlaylist DetailPlaylist) (Track, error)
+	DeleteDetailPlaylist(playlistId, trackId int) (DetailPlaylist, error)
 }

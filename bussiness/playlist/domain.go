@@ -1,24 +1,24 @@
 package playlist
 
 import (
-	"EzMusix/repository/thirdparty"
+	"EzMusix/bussiness/tracks"
 )
 
-type Domain struct {
+type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []thirdparty.Track
+	Tracks []tracks.Track
 }
 
 type Usecase interface {
-	Insert(playlist Domain) (Domain, error)
-	Get(playlist Domain) ([]Domain, error)
-	Delete(playlist Domain) (Domain, error)
+	Insert(playlist Playlist) (Playlist, error)
+	Get(playlist Playlist) ([]Playlist, error)
+	Delete(playlist Playlist) (Playlist, error)
 }
 
 type Repository interface {
-	Insert(playlist Domain) (Domain, error)
-	Get(playlist Domain) ([]Domain, error)
-	Delete(playlist Domain) (Domain, error)
+	Insert(playlist Playlist) (Playlist, error)
+	Get(playlist Playlist) ([]Playlist, error)
+	Delete(playlist Playlist) (Playlist, error)
 }

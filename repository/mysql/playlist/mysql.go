@@ -16,31 +16,30 @@ func NewPlaylistRepo(db *gorm.DB) playlist.Repository {
 	}
 }
 
-func (repo *PlaylistRepo) Insert(playlistDomain playlist.Domain) (playlist.Domain, error) {
+func (repo *PlaylistRepo) Insert(playlistDomain playlist.Playlist) (playlist.Playlist, error) {
 	rec := fromDomain(playlistDomain)
 	if err := repo.DBConn.Create(&rec).Error; err != nil {
-		return playlist.Domain{}, err
+		return playlist.Playlist{}, err
 	}
 	return rec.toDomain(), nil
 }
 
-func (repo *PlaylistRepo) Get(playlistDomain playlist.Domain) ([]playlist.Domain, error) {
+func (repo *PlaylistRepo) Get(playlistDomain playlist.Playlist) ([]playlist.Playlist, error) {
 	rec := []Playlist{}
 	if err := repo.DBConn.Preload("Tracks").Find(&rec).Error; err != nil {
-		return []playlist.Domain{}, err
+		return []playlist.Playlist{}, err
 	}
-	var domainPlaylist []playlist.Domain
+	var domainPlaylist []playlist.Playlist
 	for _, val := range rec {
 		domainPlaylist = append(domainPlaylist, val.toDomain())
 	}
-
 	return domainPlaylist, nil
 }
 
-func (repo *PlaylistRepo) Delete(playlistDomain playlist.Domain) (playlist.Domain, error) {
+func (repo *PlaylistRepo) Delete(playlistDomain playlist.Playlist) (playlist.Playlist, error) {
 	rec := fromDomain(playlistDomain)
 	if err := repo.DBConn.Where("id = ?", playlistDomain.Id).Delete(&rec).Error; err != nil {
-		return playlist.Domain{}, err
+		return playlist.Playlist{}, err
 	}
 	return rec.toDomain(), nil
 }

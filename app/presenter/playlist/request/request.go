@@ -11,14 +11,14 @@ type DeletePlaylist struct {
 	Id int `param:"id"`
 }
 
-func ToDomain(pl Playlist) playlist.Domain {
-	return playlist.Domain{
+func ToDomain(pl Playlist) playlist.Playlist {
+	return playlist.Playlist{
 		Name:   pl.Name,
 		UserID: pl.UserID,
 	}
 }
-func DeleteToDomain(pl DeletePlaylist) playlist.Domain {
-	return playlist.Domain{
+func DeleteToDomain(pl DeletePlaylist) playlist.Playlist {
+	return playlist.Playlist{
 		Id: pl.Id,
 	}
 }

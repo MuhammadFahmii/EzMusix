@@ -2,17 +2,17 @@ package playlist
 
 import (
 	"EzMusix/bussiness/playlist"
-	"EzMusix/repository/thirdparty"
+	"EzMusix/bussiness/tracks"
 )
 
 type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []thirdparty.Track `gorm:"many2many:detail_playlist"`
+	Tracks []tracks.Track `gorm:"many2many:detail_playlist"`
 }
 
-func fromDomain(domain playlist.Domain) Playlist {
+func fromDomain(domain playlist.Playlist) Playlist {
 	return Playlist{
 		Id:     domain.Id,
 		Name:   domain.Name,
@@ -20,8 +20,8 @@ func fromDomain(domain playlist.Domain) Playlist {
 	}
 }
 
-func (pl *Playlist) toDomain() playlist.Domain {
-	return playlist.Domain{
+func (pl *Playlist) toDomain() playlist.Playlist {
+	return playlist.Playlist{
 		Id:     pl.Id,
 		Name:   pl.Name,
 		UserID: pl.UserID,

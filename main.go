@@ -9,47 +9,32 @@ import (
 	playlistUsecase "EzMusix/bussiness/playlist"
 	tracksUsecase "EzMusix/bussiness/tracks"
 	usersUsecase "EzMusix/bussiness/users"
+	"EzMusix/repository/mysql"
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	usersRepo "EzMusix/repository/mysql/users"
 	trackRepo "EzMusix/repository/thirdparty"
-	"fmt"
+	"log"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/spf13/viper"
 )
 
-func InitDB() *gorm.DB {
-	config := map[string]string{
-		"DB_Username": "heinz",
-		"DB_Password": "",
-		"DB_Port":     "3306",
-		"DB_Host":     "127.0.0.1",
-		"DB_Name":     "ez_musix",
-	}
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", config["DB_Username"], config["DB_Password"], config["DB_Host"], config["DB_Port"], config["DB_Name"])
-
-	var err error
-	DB, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
-	if err != nil {
+func init() {
+	viper.SetConfigFile("app/config.json")
+	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
-
-	DB.AutoMigrate(
-		&playlistRepo.Playlist{},
-		&trackRepo.Track{},
-		&usersRepo.User{},
-	)
-
-	return DB
+	if viper.GetBool(`debug`) {
+		log.Println("Service RUN on DEBUG mode")
+	}
 }
 
 func main() {
 	e := echo.New()
-	db := InitDB()
+	db := mysql.InitDB()
 	configJWT := middlewares.ConfigJWT{
-		SecretJWT:       "12345",
-		ExpiresDuration: 1,
+		SecretJWT:       viper.GetString("secret"),
+		ExpiresDuration: viper.GetInt("expired"),
 	}
 	// Users
 	usersRepo := usersRepo.NewUserRepo(db)

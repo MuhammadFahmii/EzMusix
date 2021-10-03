@@ -29,7 +29,7 @@ func (presenter *Presenter) Register(c echo.Context) error {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, response.FromDomain(res))
+	return c.JSON(http.StatusOK, response.FromUsersRegister(res))
 }
 
 func (presenter *Presenter) Login(c echo.Context) error {
@@ -42,5 +42,5 @@ func (presenter *Presenter) Login(c echo.Context) error {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, response.FromDomain(res))
+	return c.JSON(http.StatusOK, response.FromUsersLogin(res))
 }
