@@ -44,3 +44,12 @@ func (presenter *Presenter) Login(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, response.FromUsersLogin(res))
 }
+
+func (presenter *Presenter) GetAllUsers(c echo.Context) error {
+	usersDomain := users.Domain{}
+	res, err := presenter.usersUC.GetAllUsers(usersDomain)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusOK, res)
+}

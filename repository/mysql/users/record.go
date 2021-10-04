@@ -19,18 +19,11 @@ func FromDomain(users users.Domain) User {
 	}
 }
 
-func (u *User) toDomain() users.Domain {
+func (pl *User) toDomain() users.Domain {
 	return users.Domain{
-		Id:       u.Id,
-		Username: u.Username,
-		// Playlists: toPlaylistDomain(u.Playlists),
+		Id:        pl.Id,
+		Username:  pl.Username,
+		Password:  pl.Password,
+		Playlists: pl.Playlists,
 	}
 }
-
-// func toPlaylistDomain(u []playlistRepo.Playlist) []playlists.Domain {
-// 	playlist := users.Domain{}.Playlists
-// 	for _, val := range u {
-// 		playlist = append(playlist, playlists.Domain(val))
-// 	}
-// 	return playlist
-// }

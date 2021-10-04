@@ -2,6 +2,7 @@ package users
 
 import (
 	"EzMusix/app/middlewares"
+	"EzMusix/helpers"
 	"errors"
 )
 
@@ -23,6 +24,7 @@ func (uc *UserUsecase) Register(usersDomain Domain) (Domain, error) {
 	if usersDomain.Password == "" {
 		return Domain{}, errors.New("password empty")
 	}
+	usersDomain.Password = helpers.Hash(usersDomain.Password)
 	user, err := uc.userRepo.Register(usersDomain)
 	if err != nil {
 		return Domain{}, err
@@ -37,10 +39,19 @@ func (uc *UserUsecase) Login(usersDomain Domain) (Domain, error) {
 	if usersDomain.Password == "" {
 		return Domain{}, errors.New("password is empty")
 	}
+	usersDomain.Password = helpers.Hash(usersDomain.Password)
 	user, err := uc.userRepo.Login(usersDomain)
 	if err != nil {
 		return Domain{}, err
 	}
 	user.Token, _ = uc.jwtAuth.GenerateToken(user.Id)
 	return user, nil
+}
+
+func (uc *UserUsecase) GetAllUsers(usersDomain Domain) ([]Domain, error) {
+	res, err := uc.userRepo.GetAllUsers(usersDomain)
+	if err != nil {
+		return []Domain{}, nil
+	}
+	return res, nil
 }
