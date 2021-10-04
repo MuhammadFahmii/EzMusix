@@ -4,7 +4,6 @@ import (
 	"EzMusix/app/middlewares"
 	"EzMusix/bussiness/users"
 	"EzMusix/bussiness/users/mocks"
-	"fmt"
 
 	"testing"
 
@@ -43,11 +42,6 @@ func TestLogin(t *testing.T) {
 	t.Run("Test Case 3 | Not Valid Login", func(t *testing.T) {
 		usersRepository.On("Login", mock.Anything).Return(usersDomain, nil).Once()
 		usersUsecase.Login(users.Domain{Username: "Fahmi", Password: ""})
-	})
-	t.Run("Test Case 3 | Not Valid Login", func(t *testing.T) {
-		usersRepository.On("Login", mock.Anything).Return(usersDomain, nil).Once()
-		_, err := usersUsecase.Login(users.Domain{Username: "fahmi", Password: "123"})
-		fmt.Println(err)
 	})
 }
 
