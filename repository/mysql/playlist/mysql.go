@@ -2,7 +2,6 @@ package playlist
 
 import (
 	"EzMusix/bussiness/playlists"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -34,7 +33,6 @@ func (repo *PlaylistRepo) Get(playlistDomain playlists.Domain) ([]playlists.Doma
 	for _, val := range rec {
 		domainPlaylist = append(domainPlaylist, val.toDomain())
 	}
-	fmt.Println(domainPlaylist)
 	return domainPlaylist, nil
 }
 

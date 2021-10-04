@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"EzMusix/app/middlewares"
 	"EzMusix/app/presenter/playlist"
 	"EzMusix/app/presenter/tracks"
 	"EzMusix/app/presenter/users"
@@ -10,6 +11,7 @@ import (
 )
 
 type HandlerList struct {
+	DBLog           middlewares.LogMiddleware
 	JWTMiddleware   middleware.JWTConfig
 	PlaylistHandler playlist.Presenter
 	TrackHandler    tracks.Presenter
@@ -18,10 +20,11 @@ type HandlerList struct {
 
 func (handler *HandlerList) RouteRegister(e *echo.Echo) {
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(handler.DBLog.Log)
 	u := e.Group("/users")
 	u.POST("/register", handler.UsersHandler.Register)
 	u.POST("/login", handler.UsersHandler.Login)
-	u.GET("", handler.UsersHandler.GetAllUsers, middleware.JWTWithConfig(handler.JWTMiddleware))
+	u.GET("", handler.UsersHandler.GetAllUsers)
 
 	p := e.Group("/playlists")
 	p.GET("", handler.PlaylistHandler.Get, middleware.JWTWithConfig(handler.JWTMiddleware))

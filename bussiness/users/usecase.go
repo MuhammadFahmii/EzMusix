@@ -44,7 +44,7 @@ func (uc *UserUsecase) Login(usersDomain Domain) (Domain, error) {
 	if err != nil {
 		return Domain{}, err
 	}
-	user.Token, _ = uc.jwtAuth.GenerateToken(user.Id)
+	user.Token, _ = uc.jwtAuth.GenerateToken(user.Id, user.Status)
 	return user, nil
 }
 

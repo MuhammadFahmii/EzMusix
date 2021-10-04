@@ -9,6 +9,7 @@ import (
 
 type JwtMyClaims struct {
 	UserId int
+	Status int
 	jwt.StandardClaims
 }
 
@@ -24,11 +25,12 @@ func (jwtConf *ConfigJWT) Init() middleware.JWTConfig {
 	}
 }
 
-func (jwtConf *ConfigJWT) GenerateToken(UserId int) (string, error) {
+func (jwtConf *ConfigJWT) GenerateToken(userId, status int) (string, error) {
 	claims := JwtMyClaims{
-		UserId,
+		userId,
+		status,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Hour * 1).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(jwtConf.ExpiresDuration)).Unix(),
 		},
 	}
 

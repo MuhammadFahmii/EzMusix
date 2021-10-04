@@ -9,6 +9,7 @@ type Domain struct {
 	Username  string
 	Password  string
 	Token     string
+	Status    int
 	Playlists []playlist.Playlist
 }
 

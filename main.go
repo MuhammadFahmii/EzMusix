@@ -9,6 +9,7 @@ import (
 	playlistUsecase "EzMusix/bussiness/playlists"
 	tracksUsecase "EzMusix/bussiness/tracks"
 	usersUsecase "EzMusix/bussiness/users"
+	"EzMusix/repository/mongodb"
 	"EzMusix/repository/mysql"
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	usersRepo "EzMusix/repository/mysql/users"
@@ -32,6 +33,9 @@ func init() {
 func main() {
 	e := echo.New()
 	db := mysql.InitDB()
+	dbLog := middlewares.LogMiddleware{
+		DBLog: mongodb.InitLog(),
+	}
 	configJWT := middlewares.ConfigJWT{
 		SecretJWT:       viper.GetString("secret"),
 		ExpiresDuration: viper.GetInt("expired"),
@@ -51,6 +55,7 @@ func main() {
 	tracksUsecase := tracksUsecase.NewTracksUsecase(tracksRepo)
 	tracksHandler := tracksHandler.NewHandler(tracksUsecase)
 	routesInit := routes.HandlerList{
+		DBLog:           dbLog,
 		JWTMiddleware:   configJWT.Init(),
 		PlaylistHandler: *playlistHandler,
 		TrackHandler:    *tracksHandler,
