@@ -2,6 +2,7 @@ package tracks
 
 import (
 	"EzMusix/app/presenter/tracks/request"
+	"EzMusix/app/presenter/tracks/response"
 	"EzMusix/bussiness/tracks"
 	"net/http"
 
@@ -50,5 +51,5 @@ func (presenter *Presenter) DeleteDetailPlaylist(c echo.Context) error {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, response.FromDomain(res))
 }

@@ -10,25 +10,25 @@ func NewTracksUsecase(repo ThirdParty) Usecase {
 	}
 }
 
-func (trackUsecase *TracksUsecase) Get(trackName, artistName string) (Track, error) {
+func (trackUsecase *TracksUsecase) Get(trackName, artistName string) (Domain, error) {
 	res, err := trackUsecase.trackRepository.Get(trackName, artistName)
 	if err != nil {
-		return Track{}, nil
+		return Domain{}, nil
 	}
 	return res, nil
 }
-func (TracksUsecase *TracksUsecase) AddDetailPlaylist(detailPlaylist DetailPlaylist) (Track, error) {
+func (TracksUsecase *TracksUsecase) AddDetailPlaylist(detailPlaylist TrackPlaylist) (Domain, error) {
 	newTrack, err := TracksUsecase.trackRepository.AddDetailPlaylist(detailPlaylist)
 	if err != nil {
-		return Track{}, err
+		return Domain{}, err
 	}
 	return newTrack, nil
 }
 
-func (TracksUsecase *TracksUsecase) DeleteDetailPlaylist(playlistId, trackId int) (DetailPlaylist, error) {
-	deletePlaylistTrack, err := TracksUsecase.trackRepository.DeleteDetailPlaylist(playlistId, trackId)
+func (TracksUsecase *TracksUsecase) DeleteDetailPlaylist(playlistId, trackId int) (DeleteTrackPlaylist, error) {
+	deleteTrackPlaylist, err := TracksUsecase.trackRepository.DeleteDetailPlaylist(playlistId, trackId)
 	if err != nil {
-		return DetailPlaylist{}, err
+		return DeleteTrackPlaylist{}, err
 	}
-	return deletePlaylistTrack, nil
+	return deleteTrackPlaylist, nil
 }

@@ -1,4 +1,4 @@
-package playlist
+package playlists
 
 type PlaylistUsecase struct {
 	playlistRepo Repository
@@ -10,25 +10,25 @@ func NewPlaylistUsecase(repo Repository) Usecase {
 	}
 }
 
-func (playlistUseCase *PlaylistUsecase) Insert(playlist Playlist) (Playlist, error) {
+func (playlistUseCase *PlaylistUsecase) Insert(playlist Domain) (Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Insert(playlist)
 	if err != nil {
-		return Playlist{}, nil
+		return Domain{}, nil
 	}
 	return res, nil
 }
-func (playlistUseCase *PlaylistUsecase) Delete(playlist Playlist) (Playlist, error) {
+func (playlistUseCase *PlaylistUsecase) Delete(playlist Domain) (Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Delete(playlist)
 	if err != nil {
-		return Playlist{}, nil
+		return Domain{}, nil
 	}
 	return res, nil
 }
 
-func (playlistUseCase *PlaylistUsecase) Get(playlist Playlist) ([]Playlist, error) {
+func (playlistUseCase *PlaylistUsecase) Get(playlist Domain) ([]Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Get(playlist)
 	if err != nil {
-		return []Playlist{}, nil
+		return []Domain{}, nil
 	}
 	return res, nil
 }

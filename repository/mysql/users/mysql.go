@@ -16,18 +16,18 @@ func NewUserRepo(db *gorm.DB) users.Repository {
 	}
 }
 
-func (usersRepo *UsersRepo) Register(usersDomain users.Users) (users.Users, error) {
+func (usersRepo *UsersRepo) Register(usersDomain users.Domain) (users.Domain, error) {
 	usersFromDomain := FromDomain(usersDomain)
 	if err := usersRepo.DBConn.Create(&usersFromDomain).Error; err != nil {
-		return users.Users{}, err
+		return users.Domain{}, err
 	}
 	return usersFromDomain.toDomain(), nil
 }
 
-func (usersRepo *UsersRepo) Login(usersDomain users.Users) (users.Users, error) {
+func (usersRepo *UsersRepo) Login(usersDomain users.Domain) (users.Domain, error) {
 	usersFromDomain := FromDomain(usersDomain)
 	if err := usersRepo.DBConn.Where("username=? AND password=?", usersDomain.Username, usersDomain.Password).First(&usersFromDomain).Error; err != nil {
-		return users.Users{}, err
+		return users.Domain{}, err
 	}
 	return usersFromDomain.toDomain(), nil
 }

@@ -21,7 +21,7 @@ func NewTracksRepo(conn *gorm.DB) tracks.ThirdParty {
 	}
 }
 
-func (tracksRepo *TracksRepo) Get(trackName, artistName string) (tracks.Track, error) {
+func (tracksRepo *TracksRepo) Get(trackName, artistName string) (tracks.Domain, error) {
 	const API_KEY = "4b69788a296733b380069f770a174a89"
 	trackName = strings.Replace(trackName, " ", "-", -1)
 	artistName = strings.Replace(artistName, " ", "-", -1)
@@ -31,28 +31,29 @@ func (tracksRepo *TracksRepo) Get(trackName, artistName string) (tracks.Track, e
 	defer res.Body.Close()
 	response := Response{}
 	if err := json.Unmarshal(responseData, &response); err != nil {
-		return tracks.Track{}, err
+		return tracks.Domain{}, err
 	}
 	return response.toDomain(), nil
 }
 
-func (tracksRepo *TracksRepo) AddDetailPlaylist(detailPlaylist tracks.DetailPlaylist) (tracks.Track, error) {
+func (tracksRepo *TracksRepo) AddDetailPlaylist(detailPlaylist tracks.TrackPlaylist) (tracks.Domain, error) {
 	newTrack, err := tracksRepo.Get(detailPlaylist.TrackName, detailPlaylist.ArtistName)
 	if err != nil {
-		return tracks.Track{}, err
+		return tracks.Domain{}, err
 	}
 	if err := tracksRepo.DBConn.Model(&Playlist{Id: detailPlaylist.PlaylistId}).Association("Tracks").Append(&newTrack); err != nil {
-		return tracks.Track{}, err
+		return tracks.Domain{}, err
 	}
 	return newTrack, nil
 }
 
-func (tracksRepo *TracksRepo) DeleteDetailPlaylist(playlistId, trackId int) (tracks.DetailPlaylist, error) {
-	detailPlaylist := Playlist{}
-	tracksRepo.DBConn.Debug().Select("name").Joins("left join detail_playlist on detail_playlist.playlist_id = playlists.id").Find(&detailPlaylist)
-	fmt.Println(detailPlaylist)
-	if err := tracksRepo.DBConn.Model(&Playlist{Id: playlistId}).Association("Tracks").Delete(&tracks.Track{Id: trackId}); err != nil {
-		return tracks.DetailPlaylist{}, err
+func (tracksRepo *TracksRepo) DeleteDetailPlaylist(playlistId, trackId int) (tracks.DeleteTrackPlaylist, error) {
+	playlist := Playlist{}
+	track := Track{}
+	tracksRepo.DBConn.Debug().Select("name").Joins("LEFT JOIN detail_playlist ON detail_playlist.playlist_id = playlists.id").Find(&playlist)
+	tracksRepo.DBConn.Debug().Select("name").Joins("LEFT JOIN detail_playlist ON detail_playlist.track_id = tracks.id").Find(&track)
+	if err := tracksRepo.DBConn.Model(&Playlist{Id: playlistId}).Association("Tracks").Delete(&tracks.Domain{Id: trackId}); err != nil {
+		return tracks.DeleteTrackPlaylist{}, err
 	}
-	return tracks.DetailPlaylist{}, nil
+	return tracks.DeleteTrackPlaylist{PlaylistName: playlist.Name, TrackName: track.Name}, nil
 }

@@ -9,8 +9,8 @@ type Users struct {
 	Password string `json:"password" form:"password"`
 }
 
-func (usersReq Users) ToDomain() users.Users {
-	return users.Users{
+func (usersReq Users) ToDomain() users.Domain {
+	return users.Domain{
 		Username: usersReq.Username,
 		Password: usersReq.Password,
 	}

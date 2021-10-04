@@ -6,7 +6,7 @@ import (
 	tracksHandler "EzMusix/app/presenter/tracks"
 	usersHandler "EzMusix/app/presenter/users"
 	"EzMusix/app/routes"
-	playlistUsecase "EzMusix/bussiness/playlist"
+	playlistUsecase "EzMusix/bussiness/playlists"
 	tracksUsecase "EzMusix/bussiness/tracks"
 	usersUsecase "EzMusix/bussiness/users"
 	"EzMusix/repository/mysql"
@@ -38,7 +38,7 @@ func main() {
 	}
 	// Users
 	usersRepo := usersRepo.NewUserRepo(db)
-	usersUsecase := usersUsecase.NewUserUsecase(usersRepo)
+	usersUsecase := usersUsecase.NewUserUsecase(usersRepo, &configJWT)
 	usersHandler := usersHandler.NewHandler(usersUsecase)
 
 	// Playlists

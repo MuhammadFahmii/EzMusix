@@ -11,18 +11,18 @@ type Repository struct {
 }
 
 // Login provides a mock function with given fields: _a0
-func (_m *Repository) Login(_a0 users.Users) (users.Users, error) {
+func (_m *Repository) Login(_a0 users.Domain) (users.Domain, error) {
 	ret := _m.Called(_a0)
 
-	var r0 users.Users
-	if rf, ok := ret.Get(0).(func(users.Users) users.Users); ok {
+	var r0 users.Domain
+	if rf, ok := ret.Get(0).(func(users.Domain) users.Domain); ok {
 		r0 = rf(_a0)
 	} else {
-		r0 = ret.Get(0).(users.Users)
+		r0 = ret.Get(0).(users.Domain)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(users.Users) error); ok {
+	if rf, ok := ret.Get(1).(func(users.Domain) error); ok {
 		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
@@ -32,18 +32,18 @@ func (_m *Repository) Login(_a0 users.Users) (users.Users, error) {
 }
 
 // Register provides a mock function with given fields: _a0
-func (_m *Repository) Register(_a0 users.Users) (users.Users, error) {
+func (_m *Repository) Register(_a0 users.Domain) (users.Domain, error) {
 	ret := _m.Called(_a0)
 
-	var r0 users.Users
-	if rf, ok := ret.Get(0).(func(users.Users) users.Users); ok {
+	var r0 users.Domain
+	if rf, ok := ret.Get(0).(func(users.Domain) users.Domain); ok {
 		r0 = rf(_a0)
 	} else {
-		r0 = ret.Get(0).(users.Users)
+		r0 = ret.Get(0).(users.Domain)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(users.Users) error); ok {
+	if rf, ok := ret.Get(1).(func(users.Domain) error); ok {
 		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)

@@ -3,7 +3,7 @@ package playlist
 import (
 	"EzMusix/app/presenter/playlist/request"
 	"EzMusix/app/presenter/playlist/response"
-	"EzMusix/bussiness/playlist"
+	"EzMusix/bussiness/playlists"
 
 	"net/http"
 
@@ -11,10 +11,10 @@ import (
 )
 
 type Presenter struct {
-	playlistUC playlist.Usecase
+	playlistUC playlists.Usecase
 }
 
-func NewHandler(pl playlist.Usecase) *Presenter {
+func NewHandler(pl playlists.Usecase) *Presenter {
 	return &Presenter{
 		playlistUC: pl,
 	}

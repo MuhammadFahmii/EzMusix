@@ -1,23 +1,21 @@
 package users
 
-import (
-	"EzMusix/repository/mysql/playlist"
-)
+import "EzMusix/bussiness/playlists"
 
-type Users struct {
+type Domain struct {
 	Id        int
 	Username  string
 	Password  string
 	Token     string
-	Playlists []playlist.Playlist
+	Playlists []playlists.Domain
 }
 
 type Usecase interface {
-	Register(Users) (Users, error)
-	Login(Users) (Users, error)
+	Register(Domain) (Domain, error)
+	Login(Domain) (Domain, error)
 }
 
 type Repository interface {
-	Register(Users) (Users, error)
-	Login(Users) (Users, error)
+	Register(Domain) (Domain, error)
+	Login(Domain) (Domain, error)
 }

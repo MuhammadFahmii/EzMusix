@@ -24,11 +24,11 @@ type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []tracks.Track `gorm:"many2many:detail_playlist"`
+	Tracks []tracks.Domain `gorm:"many2many:detail_playlist"`
 }
 
-func (pl *Response) toDomain() tracks.Track {
-	return tracks.Track{
+func (pl *Response) toDomain() tracks.Domain {
+	return tracks.Domain{
 		Id:         pl.Message.Body.TrackList[0].Track.Id,
 		Name:       pl.Message.Body.TrackList[0].Track.Name,
 		ArtistName: pl.Message.Body.TrackList[0].Track.ArtistName,
