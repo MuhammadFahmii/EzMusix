@@ -1,0 +1,17 @@
+{
+    "debug":true,
+    "server":{
+        "address":":8080"
+    },
+    "database":{
+        "host":"db-ezmusix.czqae0fxgu2k.us-east-2.rds.amazonaws.com",
+        "port":"3306",
+        "username":"admin",
+        "password":"admin123",
+        "name":"ez_musix"
+    },
+    "jwt":{
+        "secret":"secret9984-@23",
+        "expired":72
+    }
+}
