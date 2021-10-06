@@ -26,9 +26,8 @@ func TestInsert(t *testing.T) {
 	testSetup()
 	t.Run("Test Case 2 | Valid Data", func(t *testing.T) {
 		playlistsRepo.On("Insert", mock.Anything).Return(playlistDomain, nil).Once()
-		res, err := playlistUseCase.Insert(playlistDomain)
+		_, err := playlistUseCase.Insert(playlistDomain)
 		assert.Equal(t, nil, err)
-		assert.Empty(t, res)
 	})
 }
 
