@@ -6,9 +6,10 @@ import (
 	tracksHandler "EzMusix/app/presenter/tracks"
 	usersHandler "EzMusix/app/presenter/users"
 	"EzMusix/app/routes"
-	playlistUsecase "EzMusix/bussiness/playlist"
+	playlistUsecase "EzMusix/bussiness/playlists"
 	tracksUsecase "EzMusix/bussiness/tracks"
 	usersUsecase "EzMusix/bussiness/users"
+	"EzMusix/repository/mongodb"
 	"EzMusix/repository/mysql"
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	usersRepo "EzMusix/repository/mysql/users"
@@ -32,9 +33,13 @@ func init() {
 func main() {
 	e := echo.New()
 	db := mysql.InitDB()
+	mongoDB := mongodb.InitLog()
+	dbLog := middlewares.LogMiddleware{
+		DBLog: mongoDB,
+	}
 	configJWT := middlewares.ConfigJWT{
-		SecretJWT:       viper.GetString("secret"),
-		ExpiresDuration: viper.GetInt("expired"),
+		SecretJWT:       viper.GetString("jwt.secret"),
+		ExpiresDuration: viper.GetInt("jwt.expired"),
 	}
 	// Users
 	usersRepo := usersRepo.NewUserRepo(db)
@@ -51,11 +56,12 @@ func main() {
 	tracksUsecase := tracksUsecase.NewTracksUsecase(tracksRepo)
 	tracksHandler := tracksHandler.NewHandler(tracksUsecase)
 	routesInit := routes.HandlerList{
+		DBLog:           dbLog,
 		JWTMiddleware:   configJWT.Init(),
 		PlaylistHandler: *playlistHandler,
 		TrackHandler:    *tracksHandler,
 		UsersHandler:    *usersHandler,
 	}
 	routesInit.RouteRegister(e)
-	e.Start(":8000")
+	e.Start(viper.GetString("server.address"))
 }

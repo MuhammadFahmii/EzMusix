@@ -1,0 +1,512 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is rest api that can useful to manage our favourite musix. This api consume musixmatch to get all musix data
+  version: "1.0.0"
+  title: Ez Musix
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/MuhammadFahmii/Ez_musix/1.0.0
+tags:
+  - name: users
+    description: Operations about Users
+  - name: playlists
+    description: Operations about Playlists
+  - name: tracks
+    description: Operations about Tracks
+  - name : detail playlist
+    description: Operations about detail playlist
+paths:
+# Users
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Add a new users
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object    
+                    properties:                
+                      username:
+                        type: integer
+                        example: fahmi
+                      token:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5'
+        '204':
+          $ref: "#/components/responses/204"
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+      requestBody:
+        $ref: "#/components/requestBodies/Users"
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Register user
+      description: For register new user.
+      responses:
+        '201':
+          description: successful created users
+          content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object    
+                    properties:                
+                      username:
+                        type: integer
+                        example: fahmi
+        '400':
+          $ref: "#/components/responses/400"
+        '500':
+          $ref: "#/components/responses/500"
+      requestBody:
+        $ref: "#/components/requestBodies/Users"
+  /users:
+    get:
+      tags:
+        - users
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:                
+                        id:
+                          type: integer
+                          example: 1
+                        username:
+                          type: string
+                          example: 'heinz'
+        '204':
+          $ref: "#/components/responses/204"
+        '500':
+          $ref: "#/components/responses/500"
+      security:
+        - api_key:
+            - 'write:users'
+
+# Playlist 
+  /playlists:
+    post:
+      tags:
+        - playlists
+      summary: Create new playlist
+      responses:
+        '400':
+          $ref:  "#/components/responses/400"
+        '500':
+          $ref:  "#/components/responses/500"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object    
+              properties:      
+                status:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "successful"
+                data:
+                  type: object    
+                  properties:        
+                    username:
+                      type: integer
+                      example: calm
+        description: Created user object
+        required: true
+    get:
+      tags:
+        - playlists
+      summary: Get all playlist
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: integer
+                          example: calm        
+                        track:  
+                          type: array
+                          items: 
+                            type: object
+                            properties:
+                              track_name:
+                                type: string
+                                example: to the bone
+                              artist_name:
+                                type: string
+                                example: pamungkas
+        '204':
+          $ref: "#/components/responses/204"
+        '500':
+          $ref: "#/components/responses/500"
+  '/playlist/{playlist_id}':
+    delete:
+      tags:
+        - playlists
+      summary: Delete playlist based on id
+      description: this can be only done with logged users
+      parameters:
+      - name: playlist_id
+        in: path
+        description: The playlist_id that needs to be fetched. Use 1 for testing.
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: integer
+                        example: calm
+        '204':
+          $ref: "#/components/responses/204"
+        '500':
+          $ref: "#/components/responses/500" 
+# Tracks
+  /tracks:
+    get:
+      tags:
+        - tracks
+      summary: Get spesified track using 3rd API
+      parameters:
+      - name: track_name
+        in: path
+        description: The playlist_id that needs to be fetched. Use to the bone for testing.
+        required: true
+        schema:
+          type: string
+      - name: artist_name
+        in: path
+        description: The artist_name that needs to be fetched. Use pamungkas for testing.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object    
+                    properties:                
+                      id:
+                        type: integer
+                        example: fahmi
+                      title:
+                        type: string
+                        example: 'to the bone'
+                      artist_name:
+                        type: string
+                        example: 'pamungkas'
+                      album_name:
+                        type: string
+                        example: 'blabla'
+        '204':
+          description: track not found
+
+# Detail Playlist
+  /detailPlaylist:
+    post:
+      tags:
+        - detail playlist
+      summary: Create new playlist
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object    
+                    properties:                
+                      playlist_name:
+                        type: integer
+                        example: calm
+                      track_name:
+                        type: string
+                        example: 'to the bone'
+        '204':
+          description: track not found operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object    
+              properties:      
+                status:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "successful"
+                data:
+                  type: object    
+                  properties:        
+                    playlist_id:
+                      type: integer
+                      example: 1
+                    track_name:
+                      type: string
+                      example: "to the bone"
+                    artist_name:
+                      type: string
+                      example: "pamungkas"
+        description: Created user object
+        required: true
+  '/detailPlaylist/{playlist_id}/{track_id}':
+      delete:
+        tags:
+          - detail playlist
+        summary: Delete playlist based on id
+        description: this can be only done with logged users
+        parameters:
+        - name: playlist_id
+          in: path
+          description: The playlist_id that needs to be fetched. Use 1 for testing.
+          required: true
+          schema:
+            type: integer
+        - name: track_id
+          in: path
+          description: The track_id that needs to be fetched. Use 198422539 for testing.
+          required: true
+          schema:
+            type: integer
+        responses:
+          '200':
+            description: successful operation
+            content: 
+              application/json:
+                schema:
+                  type: object    
+                  properties:      
+                    status:
+                      type: integer
+                      example: 200
+                    message:
+                      type: string
+                      example: "successful"
+                    data:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: calm
+                        track_name:
+                          type: string
+                          example: to the bone
+          '204':
+            description: data not found
+            content: 
+              application/json:
+                schema:
+                  type: object    
+                  properties:      
+                    status:
+                      type: integer
+                      example: 204
+                    message:
+                      type: string
+                      example: "data not found"
+  
+components:
+  responses:
+    '204':
+      description: record not found
+      content:
+        application/json:
+          schema:
+            type: object    
+            properties:      
+              status:
+                type: integer
+                example: 204
+              message:
+                type: string
+                example: "record not found"
+    '400':
+      description: all request body not fill
+      content:
+        application/json:
+          schema:
+            type: object    
+            properties:      
+              status:
+                type: integer
+                example: 400
+              message:
+                type: string
+                example: "please fill all field"
+    '500':
+      description: "internal server error"
+      content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: "internal server error"
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          format: int32
+          description: User Status
+      xml:
+        name: User
+  requestBodies:
+    Users:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+                example: fahmi
+              password:
+                type: string
+                example: 123
+      description: users object
+      required: true
+    NewPlaylist:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              username:
+                type: string
+              firstName:
+                type: string
+      description: List of playlist object
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

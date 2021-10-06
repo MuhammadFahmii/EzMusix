@@ -18,8 +18,8 @@ type DeleteDetailPlaylist struct {
 	TrackId    int `json:"track_id" param:"track_id"`
 }
 
-func ToDetailPlaylist(dp DetailPlaylist) tracks.DetailPlaylist {
-	return tracks.DetailPlaylist{
+func ToDetailPlaylist(dp DetailPlaylist) tracks.TrackPlaylist {
+	return tracks.TrackPlaylist{
 		PlaylistId: dp.PlaylistId,
 		TrackName:  dp.TrackName,
 		ArtistName: dp.ArtistName,

@@ -8,7 +8,7 @@ type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []tracks.Track
+	Tracks []tracks.Domain
 }
 
 type Usecase interface {

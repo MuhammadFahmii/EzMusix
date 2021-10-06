@@ -2,30 +2,31 @@ package users
 
 import (
 	"EzMusix/bussiness/users"
-	"EzMusix/repository/mysql/playlist"
+	playlistRepo "EzMusix/repository/mysql/playlist"
 )
 
 type User struct {
 	Id        int `gorm:"primaryKey"`
 	Username  string
 	Password  string
-	Playlists []playlist.Playlist
+	Status    int
+	Playlists []playlistRepo.Playlist
 }
 
-func (user *User) toDomain() users.Domain {
-	return users.Domain{
-		Id:        user.Id,
-		Username:  user.Username,
-		Password:  user.Password,
-		Playlists: user.Playlists,
+func FromDomain(users users.Domain) User {
+	return User{
+		Username: users.Username,
+		Password: users.Password,
+		Status:   users.Status,
 	}
 }
 
-func FromDomain(domain users.Domain) User {
-	return User{
-		Id:        domain.Id,
-		Username:  domain.Username,
-		Password:  domain.Password,
-		Playlists: domain.Playlists,
+func (pl *User) toDomain() users.Domain {
+	return users.Domain{
+		Id:        pl.Id,
+		Username:  pl.Username,
+		Password:  pl.Password,
+		Status:    pl.Status,
+		Playlists: pl.Playlists,
 	}
 }

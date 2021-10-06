@@ -1,3 +1,5 @@
-cli
 config.json
+
 *.pem
+*.sh
+*.test

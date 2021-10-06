@@ -1,7 +1,8 @@
 package playlist
 
 import (
-	"EzMusix/bussiness/playlist"
+	"EzMusix/bussiness/playlists"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -10,36 +11,42 @@ type PlaylistRepo struct {
 	DBConn *gorm.DB
 }
 
-func NewPlaylistRepo(db *gorm.DB) playlist.Repository {
+func NewPlaylistRepo(db *gorm.DB) playlists.Repository {
 	return &PlaylistRepo{
 		DBConn: db,
 	}
 }
 
-func (repo *PlaylistRepo) Insert(playlistDomain playlist.Playlist) (playlist.Playlist, error) {
+func (repo *PlaylistRepo) Insert(playlistDomain playlists.Domain) (playlists.Domain, error) {
 	rec := fromDomain(playlistDomain)
 	if err := repo.DBConn.Create(&rec).Error; err != nil {
-		return playlist.Playlist{}, err
+		return playlists.Domain{}, err
 	}
 	return rec.toDomain(), nil
 }
 
-func (repo *PlaylistRepo) Get(playlistDomain playlist.Playlist) ([]playlist.Playlist, error) {
+func (repo *PlaylistRepo) Get(playlistDomain playlists.Domain) ([]playlists.Domain, error) {
 	rec := []Playlist{}
-	if err := repo.DBConn.Preload("Tracks").Find(&rec).Error; err != nil {
-		return []playlist.Playlist{}, err
+	if err := repo.DBConn.Debug().Preload("Tracks").Find(&rec).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []playlists.Domain{}, errors.New("record not found")
+		}
+		return []playlists.Domain{}, err
 	}
-	var domainPlaylist []playlist.Playlist
+	var domainPlaylist []playlists.Domain
 	for _, val := range rec {
 		domainPlaylist = append(domainPlaylist, val.toDomain())
 	}
 	return domainPlaylist, nil
 }
 
-func (repo *PlaylistRepo) Delete(playlistDomain playlist.Playlist) (playlist.Playlist, error) {
+func (repo *PlaylistRepo) Delete(playlistDomain playlists.Domain) (playlists.Domain, error) {
 	rec := fromDomain(playlistDomain)
 	if err := repo.DBConn.Where("id = ?", playlistDomain.Id).Delete(&rec).Error; err != nil {
-		return playlist.Playlist{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return playlists.Domain{}, errors.New("record not found")
+		}
+		return playlists.Domain{}, err
 	}
 	return rec.toDomain(), nil
 }
