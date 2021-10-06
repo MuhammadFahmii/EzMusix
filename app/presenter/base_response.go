@@ -1,34 +1,31 @@
 package presenter
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
 
 type BaseResponse struct {
-	Meta struct {
-		Status   int      `json:"rc"`
-		Message  string   `json:"message"`
-		Messages []string `json:"messages,omitempty"`
-	} `json:"meta"`
-	Data interface{} `json:"data"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
-func NewSuccessResponse(c echo.Context, param interface{}) error {
+func NewSuccessResponse(c echo.Context, status int, param interface{}) error {
 	response := BaseResponse{}
-	response.Meta.Status = http.StatusOK
-	response.Meta.Message = "Success"
+	response.Status = status
+	response.Message = "successful"
 	response.Data = param
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(status, response)
 }
 
 func NewErrorResponse(c echo.Context, status int, err error) error {
 	response := BaseResponse{}
-	response.Meta.Status = status
-	response.Meta.Message = "Something not right"
-	response.Meta.Messages = []string{err.Error()}
+	response.Status = status
+	fmt.Println(err.Error())
+	response.Message = err.Error()
 
 	return c.JSON(status, response)
 }

@@ -6,21 +6,29 @@ import (
 )
 
 type Playlist struct {
-	Id     int    `json:"id"`
-	Name   string `json:"name" form:"name"`
-	UserID int    `json:"user_id" form:"user_id"`
-	Track  []tracks.Domain
+	Id    int    `json:"id"`
+	Name  string `json:"name" form:"name"`
+	Track []tracks.Domain
+}
+
+type AddPlaylist struct {
+	Name string `json:"name"`
 }
 
 type DeletePlaylist struct {
 	Name string
 }
 
-func FromDomain(pl playlists.Domain) *Playlist {
-	return &Playlist{
-		Id:     pl.Id,
-		Name:   pl.Name,
-		UserID: pl.UserID,
-		Track:  pl.Tracks,
+func FromDomain(pl playlists.Domain) Playlist {
+	return Playlist{
+		Id:    pl.Id,
+		Name:  pl.Name,
+		Track: pl.Tracks,
+	}
+}
+
+func ToAddPlaylist(pl playlists.Domain) AddPlaylist {
+	return AddPlaylist{
+		Name: pl.Name,
 	}
 }

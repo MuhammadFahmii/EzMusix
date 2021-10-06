@@ -21,7 +21,7 @@ import (
 )
 
 func init() {
-	viper.SetConfigFile("app/config.json")
+	viper.SetConfigFile("config.json")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
@@ -33,12 +33,13 @@ func init() {
 func main() {
 	e := echo.New()
 	db := mysql.InitDB()
+	mongoDB := mongodb.InitLog()
 	dbLog := middlewares.LogMiddleware{
-		DBLog: mongodb.InitLog(),
+		DBLog: mongoDB,
 	}
 	configJWT := middlewares.ConfigJWT{
-		SecretJWT:       viper.GetString("secret"),
-		ExpiresDuration: viper.GetInt("expired"),
+		SecretJWT:       viper.GetString("jwt.secret"),
+		ExpiresDuration: viper.GetInt("jwt.expired"),
 	}
 	// Users
 	usersRepo := usersRepo.NewUserRepo(db)
@@ -62,5 +63,5 @@ func main() {
 		UsersHandler:    *usersHandler,
 	}
 	routesInit.RouteRegister(e)
-	e.Start(":8000")
+	e.Start(viper.GetString("server.address"))
 }

@@ -1,8 +1,6 @@
 package users
 
-import (
-	"EzMusix/repository/mysql/playlist"
-)
+import "EzMusix/repository/mysql/playlist"
 
 type Domain struct {
 	Id        int

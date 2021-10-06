@@ -2,6 +2,7 @@ package playlist
 
 import (
 	"EzMusix/bussiness/playlists"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -27,6 +28,9 @@ func (repo *PlaylistRepo) Insert(playlistDomain playlists.Domain) (playlists.Dom
 func (repo *PlaylistRepo) Get(playlistDomain playlists.Domain) ([]playlists.Domain, error) {
 	rec := []Playlist{}
 	if err := repo.DBConn.Debug().Preload("Tracks").Find(&rec).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []playlists.Domain{}, errors.New("record not found")
+		}
 		return []playlists.Domain{}, err
 	}
 	var domainPlaylist []playlists.Domain
@@ -39,6 +43,9 @@ func (repo *PlaylistRepo) Get(playlistDomain playlists.Domain) ([]playlists.Doma
 func (repo *PlaylistRepo) Delete(playlistDomain playlists.Domain) (playlists.Domain, error) {
 	rec := fromDomain(playlistDomain)
 	if err := repo.DBConn.Where("id = ?", playlistDomain.Id).Delete(&rec).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return playlists.Domain{}, errors.New("record not found")
+		}
 		return playlists.Domain{}, err
 	}
 	return rec.toDomain(), nil

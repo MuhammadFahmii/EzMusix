@@ -1,5 +1,7 @@
 package playlists
 
+import "errors"
+
 type PlaylistUsecase struct {
 	playlistRepo Repository
 }
@@ -28,7 +30,10 @@ func (playlistUseCase *PlaylistUsecase) Delete(playlist Domain) (Domain, error) 
 func (playlistUseCase *PlaylistUsecase) Get(playlist Domain) ([]Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Get(playlist)
 	if err != nil {
-		return []Domain{}, nil
+		if err.Error() == "record not found" {
+			return []Domain{}, errors.New("not found")
+		}
+		return []Domain{}, err
 	}
 	return res, nil
 }
