@@ -4,10 +4,10 @@
         "address":":8080"
     },
     "database":{
-        "host":"localhost",
+        "host":"db-ezmusix.czqae0fxgu2k.us-east-2.rds.amazonaws.com",
         "port":"3306",
-        "username":"root",
-        "password":"",
+        "username":"admin",
+        "password":"admin123",
         "name":"ez_musix"
     },
     "jwt":{
