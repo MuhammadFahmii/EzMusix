@@ -2,6 +2,7 @@ package routes
 
 import (
 	"EzMusix/app/middlewares"
+	"EzMusix/app/presenter/comments"
 	"EzMusix/app/presenter/playlist"
 	"EzMusix/app/presenter/tracks"
 	"EzMusix/app/presenter/users"
@@ -16,6 +17,7 @@ type HandlerList struct {
 	PlaylistHandler playlist.Presenter
 	TrackHandler    tracks.Presenter
 	UsersHandler    users.Presenter
+	CommentsHandler comments.Presenter
 }
 
 func (handler *HandlerList) RouteRegister(e *echo.Echo) {
@@ -35,6 +37,11 @@ func (handler *HandlerList) RouteRegister(e *echo.Echo) {
 	p.GET("", handler.PlaylistHandler.Get)
 	p.POST("", handler.PlaylistHandler.Insert)
 	p.DELETE("/:id", handler.PlaylistHandler.Delete)
+
+	c := e.Group("/comments", middleware.JWTWithConfig(handler.JWTMiddleware))
+	c.GET("", handler.CommentsHandler.Get)
+	c.POST("", handler.CommentsHandler.Insert)
+	c.DELETE("/:id", handler.CommentsHandler.Delete)
 
 	t := e.Group("/tracks")
 	t.GET("", handler.TrackHandler.Get)
