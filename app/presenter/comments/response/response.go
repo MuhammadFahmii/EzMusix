@@ -6,9 +6,7 @@ import (
 )
 
 type Comments struct {
-	Id        int       `json:"id" form:"id"`
 	Content   string    `json:"content" form:"content"`
-	UserID    int       `json:"user_id" form:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -22,9 +20,7 @@ type DeleteComments struct {
 
 func FromDomain(pl comments.Domain) Comments {
 	return Comments{
-		Id:        pl.Id,
 		Content:   pl.Content,
-		UserID:    pl.UserID,
 		CreatedAt: pl.CreatedAt,
 		UpdatedAt: pl.UpdatedAt,
 	}
