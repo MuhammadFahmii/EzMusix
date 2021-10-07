@@ -20,21 +20,25 @@ type HandlerList struct {
 
 func (handler *HandlerList) RouteRegister(e *echo.Echo) {
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+	}))
 	e.Use(handler.DBLog.Log)
 	u := e.Group("/users")
 	u.POST("/register", handler.UsersHandler.Register)
 	u.POST("/login", handler.UsersHandler.Login)
 	u.GET("", handler.UsersHandler.GetAllUsers, middleware.JWTWithConfig(handler.JWTMiddleware))
 
-	p := e.Group("/playlists")
-	p.GET("", handler.PlaylistHandler.Get, middleware.JWTWithConfig(handler.JWTMiddleware))
+	p := e.Group("/playlists", middleware.JWTWithConfig(handler.JWTMiddleware))
+	p.GET("", handler.PlaylistHandler.Get)
 	p.POST("", handler.PlaylistHandler.Insert)
 	p.DELETE("/:id", handler.PlaylistHandler.Delete)
 
 	t := e.Group("/tracks")
 	t.GET("", handler.TrackHandler.Get)
 
-	dp := e.Group("/detailPlaylist")
+	dp := e.Group("/detailPlaylist", middleware.JWTWithConfig(handler.JWTMiddleware))
 	dp.POST("", handler.TrackHandler.AddDetailPlaylist)
 	dp.DELETE("/:playlist_id/:track_id", handler.TrackHandler.DeleteDetailPlaylist)
 }

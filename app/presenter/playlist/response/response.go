@@ -6,9 +6,9 @@ import (
 )
 
 type Playlist struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name" form:"name"`
-	Track []tracks.Domain
+	Id    int             `json:"id"`
+	Name  string          `json:"name" form:"name"`
+	Track []tracks.Domain `json:",omitempty"`
 }
 
 type AddPlaylist struct {
@@ -24,6 +24,12 @@ func FromDomain(pl playlists.Domain) Playlist {
 		Id:    pl.Id,
 		Name:  pl.Name,
 		Track: pl.Tracks,
+	}
+}
+
+func FromDomainDelete(pl playlists.Domain) DeletePlaylist {
+	return DeletePlaylist{
+		Name: pl.Name,
 	}
 }
 

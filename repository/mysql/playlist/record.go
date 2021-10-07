@@ -3,14 +3,14 @@ package playlist
 import (
 	"EzMusix/bussiness/playlists"
 	"EzMusix/bussiness/tracks"
-	"EzMusix/repository/thirdparty"
+	trackRepo "EzMusix/repository/mysql/tracks"
 )
 
 type Playlist struct {
 	Id     int
 	Name   string
 	UserID int
-	Tracks []thirdparty.Track `gorm:"many2many:detail_playlist"`
+	Tracks []trackRepo.Track `gorm:"many2many:detail_playlist"`
 }
 
 func fromDomain(domain playlists.Domain) Playlist {
@@ -26,13 +26,24 @@ func (pl *Playlist) toDomain() playlists.Domain {
 		Id:     pl.Id,
 		Name:   pl.Name,
 		UserID: pl.UserID,
-		Tracks: toTrackDomain(pl),
+		Tracks: convertToArray(pl.Tracks),
 	}
 }
-func toTrackDomain(pl *Playlist) []tracks.Domain {
-	track := playlists.Domain{}.Tracks
-	for _, val := range pl.Tracks {
-		track = append(track, tracks.Domain(val))
+
+func convertToArray(track []trackRepo.Track) []tracks.Domain {
+	tracksDomain := []tracks.Domain{}
+	for _, val := range track {
+		tracksDomain = append(tracksDomain, toTrackDomain(val))
 	}
-	return track
+	return tracksDomain
+}
+
+func toTrackDomain(track trackRepo.Track) tracks.Domain {
+	return tracks.Domain{
+		Id:            track.Id,
+		TrackName:     track.TrackName,
+		ArtistName:    track.ArtistName,
+		AlbumName:     track.AlbumName,
+		TrackShareUrl: track.TrackShareUrl,
+	}
 }

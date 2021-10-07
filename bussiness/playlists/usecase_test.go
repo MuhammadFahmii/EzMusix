@@ -24,25 +24,30 @@ func testSetup() {
 
 func TestInsert(t *testing.T) {
 	testSetup()
-	t.Run("Test Case 2 | Valid Data", func(t *testing.T) {
-		playlistsRepo.On("Insert", mock.Anything).Return(playlistDomain, nil).Once()
+	playlistsRepo.On("Insert", mock.Anything).Return(playlistDomain, nil)
+	t.Run("Test Case 1 | Valid Data", func(t *testing.T) {
 		_, err := playlistUseCase.Insert(playlistDomain)
+		assert.Nil(t, err)
 		assert.Equal(t, nil, err)
 	})
 }
 
 func TestGet(t *testing.T) {
 	testSetup()
-	t.Run("Test Case 2 | Data Found", func(t *testing.T) {
-		playlistsRepo.On("Get", mock.Anything).Return([]playlists.Domain{}, nil).Once()
-		playlistUseCase.Get(playlistDomain)
+	playlistsRepo.On("Get", mock.Anything).Return([]playlists.Domain{}, nil)
+	t.Run("Test Case 1 | Valid Data", func(t *testing.T) {
+		_, err := playlistUseCase.Get(playlistDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }
 
 func TestDelete(t *testing.T) {
 	testSetup()
+	playlistsRepo.On("Delete", mock.Anything).Return(playlistDomain, nil)
 	t.Run("Test Case 2 | Data Found", func(t *testing.T) {
-		playlistsRepo.On("Delete", mock.Anything).Return(playlistDomain, nil).Once()
-		playlistUseCase.Delete(playlistDomain)
+		_, err := playlistUseCase.Delete(playlistDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }

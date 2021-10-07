@@ -23,10 +23,9 @@ func FromDomain(users users.Domain) User {
 
 func (pl *User) toDomain() users.Domain {
 	return users.Domain{
-		Id:        pl.Id,
-		Username:  pl.Username,
-		Password:  pl.Password,
-		Status:    pl.Status,
-		Playlists: pl.Playlists,
+		Id:       pl.Id,
+		Username: pl.Username,
+		Password: pl.Password,
+		Status:   pl.Status,
 	}
 }

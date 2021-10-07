@@ -1,19 +1,21 @@
 package presenter
 
 import (
-	"fmt"
-
 	"github.com/labstack/echo/v4"
 )
 
-type BaseResponse struct {
+type SuccessResponse struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
+type ErrorResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
 
 func NewSuccessResponse(c echo.Context, status int, param interface{}) error {
-	response := BaseResponse{}
+	response := SuccessResponse{}
 	response.Status = status
 	response.Message = "successful"
 	response.Data = param
@@ -22,10 +24,8 @@ func NewSuccessResponse(c echo.Context, status int, param interface{}) error {
 }
 
 func NewErrorResponse(c echo.Context, status int, err error) error {
-	response := BaseResponse{}
+	response := ErrorResponse{}
 	response.Status = status
-	fmt.Println(err.Error())
 	response.Message = err.Error()
-
 	return c.JSON(status, response)
 }

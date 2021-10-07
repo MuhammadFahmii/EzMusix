@@ -12,8 +12,9 @@ import (
 	"EzMusix/repository/mongodb"
 	"EzMusix/repository/mysql"
 	playlistRepo "EzMusix/repository/mysql/playlist"
+	trackRepo "EzMusix/repository/mysql/tracks"
 	usersRepo "EzMusix/repository/mysql/users"
-	trackRepo "EzMusix/repository/thirdparty"
+	"EzMusix/repository/thirdparty"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -53,7 +54,8 @@ func main() {
 
 	// Tracks
 	tracksRepo := trackRepo.NewTracksRepo(db)
-	tracksUsecase := tracksUsecase.NewTracksUsecase(tracksRepo)
+	thirdParty := thirdparty.NewThirdParty(db)
+	tracksUsecase := tracksUsecase.NewTracksUsecase(tracksRepo, thirdParty)
 	tracksHandler := tracksHandler.NewHandler(tracksUsecase)
 	routesInit := routes.HandlerList{
 		DBLog:           dbLog,

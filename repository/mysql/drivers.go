@@ -2,8 +2,8 @@ package mysql
 
 import (
 	"EzMusix/repository/mysql/playlist"
+	"EzMusix/repository/mysql/tracks"
 	"EzMusix/repository/mysql/users"
-	"EzMusix/repository/thirdparty"
 	"fmt"
 
 	"github.com/spf13/viper"
@@ -31,7 +31,7 @@ func InitDB() *gorm.DB {
 	DB.AutoMigrate(
 		&users.User{},
 		&playlist.Playlist{},
-		&thirdparty.Track{},
+		&tracks.Track{},
 	)
 
 	return DB

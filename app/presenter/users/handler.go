@@ -5,7 +5,6 @@ import (
 	"EzMusix/app/presenter/users/request"
 	"EzMusix/app/presenter/users/response"
 	"EzMusix/bussiness/users"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -42,7 +41,6 @@ func (presenter *Presenter) Login(c echo.Context) error {
 	domain := reqUsers.ToDomain()
 	res, err := presenter.usersUC.Login(domain)
 	if err != nil {
-		fmt.Println(err.Error())
 		if err.Error() == "please fill all fields" {
 			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
 		}
