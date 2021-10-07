@@ -29,7 +29,9 @@ func TestGet(t *testing.T) {
 	testSetup()
 	thirdParty.On("Get", mock.Anything, mock.Anything).Return(tracksDomain, nil)
 	t.Run("Test Case 1| Data Found", func(t *testing.T) {
-		tracksUsecase.Get(trackPlaylist.TrackName, trackPlaylist.ArtistName)
+		_, err := tracksUsecase.Get(trackPlaylist.TrackName, trackPlaylist.ArtistName)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }
 
