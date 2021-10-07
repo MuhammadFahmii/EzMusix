@@ -2,15 +2,19 @@ package main
 
 import (
 	"EzMusix/app/middlewares"
+	commentsHandler "EzMusix/app/presenter/comments"
 	playlistHandler "EzMusix/app/presenter/playlist"
 	tracksHandler "EzMusix/app/presenter/tracks"
 	usersHandler "EzMusix/app/presenter/users"
 	"EzMusix/app/routes"
+	commentsUsecase "EzMusix/bussiness/comments"
 	playlistUsecase "EzMusix/bussiness/playlists"
 	tracksUsecase "EzMusix/bussiness/tracks"
 	usersUsecase "EzMusix/bussiness/users"
+
 	"EzMusix/repository/mongodb"
 	"EzMusix/repository/mysql"
+	commentsRepo "EzMusix/repository/mysql/comments"
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	trackRepo "EzMusix/repository/mysql/tracks"
 	usersRepo "EzMusix/repository/mysql/users"
@@ -52,6 +56,10 @@ func main() {
 	playlistUsecase := playlistUsecase.NewPlaylistUsecase(playlistRepo)
 	playlistHandler := playlistHandler.NewHandler(playlistUsecase)
 
+	commentsRepo := commentsRepo.NewCommentsRepo(db)
+	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentsHandler.NewHandler(commentsUsecase)
+
 	// Tracks
 	tracksRepo := trackRepo.NewTracksRepo(db)
 	thirdParty := thirdparty.NewThirdParty(db)
@@ -63,6 +71,7 @@ func main() {
 		PlaylistHandler: *playlistHandler,
 		TrackHandler:    *tracksHandler,
 		UsersHandler:    *usersHandler,
+		CommentsHandler: *commentsHandler,
 	}
 	routesInit.RouteRegister(e)
 	e.Start(viper.GetString("server.address"))

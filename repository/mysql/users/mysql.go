@@ -44,7 +44,7 @@ func (usersRepo *UsersRepo) Login(usersDomain users.Domain) (users.Domain, error
 }
 func (usersRepo *UsersRepo) GetAllUsers(usersDomain users.Domain) ([]users.Domain, error) {
 	rec := []User{}
-	if err := usersRepo.DBConn.Debug().Preload("Playlists.Tracks").Find(&rec).Error; err != nil {
+	if err := usersRepo.DBConn.Debug().Preload("Comments").Preload("Playlists").Find(&rec).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return []users.Domain{}, errors.New("record not found")
 		}

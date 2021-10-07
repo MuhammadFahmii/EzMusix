@@ -2,6 +2,7 @@ package users
 
 import (
 	"EzMusix/bussiness/users"
+	"EzMusix/repository/mysql/comments"
 	playlistRepo "EzMusix/repository/mysql/playlist"
 	"time"
 )
@@ -14,6 +15,7 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Playlists []playlistRepo.Playlist
+	Comments  []comments.Comments
 }
 
 func FromDomain(users users.Domain) User {

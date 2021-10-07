@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"EzMusix/repository/mysql/comments"
 	"EzMusix/repository/mysql/playlist"
 	"EzMusix/repository/mysql/tracks"
 	"EzMusix/repository/mysql/users"
@@ -32,6 +33,7 @@ func InitDB() *gorm.DB {
 		&users.User{},
 		&playlist.Playlist{},
 		&tracks.Track{},
+		&comments.Comments{},
 	)
 
 	return DB

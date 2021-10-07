@@ -11,9 +11,8 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/MuhammadFahmii/Ez_musix/1.0.0
+  - description: AWS Server Deploy
+    url: http://3.131.153.103:8080
 tags:
   - name: users
     description: Operations about Users
@@ -22,7 +21,9 @@ tags:
   - name: tracks
     description: Operations about Tracks
   - name : detail playlist
-    description: Operations about detail playlist
+    description: Operations about Detail playlist
+  - name : comments
+    description: Operations about User comment
 paths:
 # Users
   /users/login:
@@ -128,6 +129,53 @@ paths:
           $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500"
+    put:
+      tags:
+        - users
+      summary: Change user info
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object    
+                    properties:                
+                      username:
+                        type: integer
+                        example: fahmi
+        '400':
+          $ref: "#/components/responses/400"
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object    
+              properties:      
+                id:
+                  type: integer
+                  example: 1
+                username:
+                  type: string
+                  example: fahmi
+                password:
+                  type: string
+                  example: jajaja
+        description: Created user object
+        required: true
 
 # Playlist 
   /playlists:
@@ -397,7 +445,112 @@ paths:
                           example: to the bone
           '404':
             $ref: "#/components/responses/404"
-  
+
+# Comments 
+  /comments:
+    post:
+      tags:
+        - comments
+      summary: Create new comments
+      responses:
+        '400':
+          $ref:  "#/components/responses/400"
+        '500':
+          $ref:  "#/components/responses/500"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object    
+              properties:      
+                status:
+                  type: integer
+                  example: 200
+                message:
+                  type: string
+                  example: "successful"
+                data:
+                  type: object    
+                  properties:        
+                    content:
+                      type: string
+                      example: wah senangnya
+                    user_id:
+                      type: integer
+                      example: 1
+        description: Created comment object
+        required: true
+    get:
+      tags:
+        - comments
+      summary: Get all comments
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        content:
+                          type: string
+                          example: wah senangnya        
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500"
+  '/comments/{comments_id}':
+    delete:
+      tags:
+        - comments
+      summary: Delete comments based on id
+      description: this can be only done with logged users
+      parameters:
+      - name: comments_id
+        in: path
+        description: The comments_id that needs to be fetched. Use 1 for testing.
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                type: object    
+                properties:      
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "successful"
+                  data:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        example: wah senangnya
+        '404':
+          $ref: "#/components/responses/404"
+        '500':
+          $ref: "#/components/responses/500" 
+
 components:
   responses:
     '400':
@@ -439,31 +592,6 @@ components:
                   message:
                     type: string
                     example: "internal server error"
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        username:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        password:
-          type: string
-        phone:
-          type: string
-        userStatus:
-          type: integer
-          format: int32
-          description: User Status
-      xml:
-        name: User
   requestBodies:
     Users:
       content:
