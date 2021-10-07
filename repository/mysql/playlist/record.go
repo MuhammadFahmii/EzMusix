@@ -44,6 +44,7 @@ func toTrackDomain(track trackRepo.Track) tracks.Domain {
 		TrackName:     track.TrackName,
 		ArtistName:    track.ArtistName,
 		AlbumName:     track.AlbumName,
+		TrackRating:   track.TrackRating,
 		TrackShareUrl: track.TrackShareUrl,
 	}
 }
