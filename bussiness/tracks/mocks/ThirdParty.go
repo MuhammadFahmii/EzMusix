@@ -10,48 +10,6 @@ type ThirdParty struct {
 	mock.Mock
 }
 
-// AddDetailPlaylist provides a mock function with given fields: detailPlaylist
-func (_m *ThirdParty) AddDetailPlaylist(detailPlaylist tracks.TrackPlaylist) (tracks.Domain, error) {
-	ret := _m.Called(detailPlaylist)
-
-	var r0 tracks.Domain
-	if rf, ok := ret.Get(0).(func(tracks.TrackPlaylist) tracks.Domain); ok {
-		r0 = rf(detailPlaylist)
-	} else {
-		r0 = ret.Get(0).(tracks.Domain)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(tracks.TrackPlaylist) error); ok {
-		r1 = rf(detailPlaylist)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// DeleteDetailPlaylist provides a mock function with given fields: playlistId, trackId
-func (_m *ThirdParty) DeleteDetailPlaylist(playlistId int, trackId int) (tracks.DeleteTrackPlaylist, error) {
-	ret := _m.Called(playlistId, trackId)
-
-	var r0 tracks.DeleteTrackPlaylist
-	if rf, ok := ret.Get(0).(func(int, int) tracks.DeleteTrackPlaylist); ok {
-		r0 = rf(playlistId, trackId)
-	} else {
-		r0 = ret.Get(0).(tracks.DeleteTrackPlaylist)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(int, int) error); ok {
-		r1 = rf(playlistId, trackId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Get provides a mock function with given fields: trackName, artistName
 func (_m *ThirdParty) Get(trackName string, artistName string) (tracks.Domain, error) {
 	ret := _m.Called(trackName, artistName)

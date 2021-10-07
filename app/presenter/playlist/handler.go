@@ -5,6 +5,7 @@ import (
 	"EzMusix/app/presenter/playlist/request"
 	"EzMusix/app/presenter/playlist/response"
 	"EzMusix/bussiness/playlists"
+	"fmt"
 
 	"net/http"
 
@@ -23,16 +24,17 @@ func NewHandler(pl playlists.Usecase) *Presenter {
 
 func (presenter *Presenter) Insert(c echo.Context) error {
 	reqPlaylist := request.Playlist{}
-	c.Bind(reqPlaylist)
+	c.Bind(&reqPlaylist)
 	domain := request.ToDomain(reqPlaylist)
 	res, err := presenter.playlistUC.Insert(domain)
+	resFromDomain := response.ToAddPlaylist(res)
 	if err != nil {
 		if err.Error() == "please fill all fields" {
 			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
 		}
-		c.JSON(http.StatusInternalServerError, err)
+		return responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, response.ToAddPlaylist(res))
+	return responseHandler.NewSuccessResponse(c, http.StatusCreated, resFromDomain)
 }
 
 func (presenter *Presenter) Get(c echo.Context) error {
@@ -54,14 +56,15 @@ func (presenter *Presenter) Get(c echo.Context) error {
 
 func (presenter *Presenter) Delete(c echo.Context) error {
 	reqPlaylist := request.DeletePlaylist{}
-	c.Bind(reqPlaylist)
+	c.Bind(&reqPlaylist)
 	domain := request.DeleteToDomain(reqPlaylist)
 	res, err := presenter.playlistUC.Delete(domain)
+	fmt.Println(res)
 	if err != nil {
-		if err.Error() == "not found" {
+		if err.Error() == "record not found" {
 			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
 		}
 		return responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return responseHandler.NewSuccessResponse(c, http.StatusOK, response.FromDomain(res))
+	return responseHandler.NewSuccessResponse(c, http.StatusOK, response.FromDomainDelete(res))
 }

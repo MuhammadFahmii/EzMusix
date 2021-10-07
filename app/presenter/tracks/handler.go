@@ -1,8 +1,8 @@
 package tracks
 
 import (
+	responseHandler "EzMusix/app/presenter"
 	"EzMusix/app/presenter/tracks/request"
-	"EzMusix/app/presenter/tracks/response"
 	"EzMusix/bussiness/tracks"
 	"net/http"
 
@@ -24,32 +24,35 @@ func (presenter *Presenter) Get(c echo.Context) error {
 	c.Bind(&reqTrack)
 	res, err := presenter.trackUC.Get(reqTrack.TrackName, reqTrack.ArtistName)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		if err.Error() == "not found" {
+			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
+		}
+		return responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, res)
+	return responseHandler.NewSuccessResponse(c, http.StatusOK, res)
 }
 
 func (presenter *Presenter) AddDetailPlaylist(c echo.Context) error {
 	addPlaylist := request.DetailPlaylist{}
-	if err := c.Bind(&addPlaylist); err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-	}
+	c.Bind(&addPlaylist)
 	newDetailTrack := request.ToDetailPlaylist(addPlaylist)
-	res, err := presenter.trackUC.AddDetailPlaylist(newDetailTrack)
+	res, err := presenter.trackUC.AddTrackPlaylist(newDetailTrack)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, res)
+	return responseHandler.NewSuccessResponse(c, http.StatusCreated, res)
 }
 
 func (presenter *Presenter) DeleteDetailPlaylist(c echo.Context) error {
 	addPlaylist := request.DeleteDetailPlaylist{}
-	if err := c.Bind(&addPlaylist); err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-	}
-	res, err := presenter.trackUC.DeleteDetailPlaylist(addPlaylist.PlaylistId, addPlaylist.TrackId)
+	c.Bind(&addPlaylist)
+	res, err := presenter.trackUC.DeleteTrackPlaylist(addPlaylist.PlaylistId, addPlaylist.TrackId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		if err.Error() == "please fill all param" {
+			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
+		}
+		return responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
+
 	}
-	return c.JSON(http.StatusOK, response.FromDomain(res))
+	return responseHandler.NewSuccessResponse(c, http.StatusOK, res)
 }

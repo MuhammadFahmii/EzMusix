@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -32,14 +33,10 @@ func testSetup() {
 func TestLogin(t *testing.T) {
 	testSetup()
 	usersRepository.On("Login", mock.Anything).Return(usersDomain, nil)
-	t.Run("Test Case 2 | Not Valid Login", func(t *testing.T) {
-		usersUsecase.Login(users.Domain{Username: ""})
-	})
-	t.Run("Test Case 3 | Not Valid Login", func(t *testing.T) {
-		usersUsecase.Login(users.Domain{Username: "Fahmi", Password: ""})
-	})
-	t.Run("Test Case 4 | Valid Login", func(t *testing.T) {
-		usersUsecase.Login(usersDomain)
+	t.Run("Test Case 1 | Valid Login", func(t *testing.T) {
+		_, err := usersUsecase.Login(usersDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }
 
@@ -47,23 +44,28 @@ func TestRegister(t *testing.T) {
 	testSetup()
 	usersRepository.On("Register", mock.Anything).Return(usersDomain, nil)
 	t.Run("Test Case 1 | Valid Register", func(t *testing.T) {
-		usersUsecase.Register(usersDomain)
-	})
-	t.Run("Test Case 2| Not Valid Register", func(t *testing.T) {
-		usersUsecase.Register(users.Domain{Username: ""})
-	})
-	t.Run("Test Case 3 | Not Valid Register", func(t *testing.T) {
-		usersUsecase.Register(users.Domain{Username: "Fahmi", Password: ""})
+		_, err := usersUsecase.Register(usersDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }
 
 func TestGetAllUsers(t *testing.T) {
 	testSetup()
 	usersRepository.On("GetAllUsers", mock.Anything).Return([]users.Domain{}, nil)
-	t.Run("Test Case 1 | Data Empty", func(t *testing.T) {
-		usersUsecase.GetAllUsers(usersDomain)
+	t.Run("Test Case 1 | Valid Get", func(t *testing.T) {
+		_, err := usersUsecase.GetAllUsers(usersDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
-	t.Run("Test Case 2| Get All Data", func(t *testing.T) {
-		usersUsecase.GetAllUsers(usersDomain)
+}
+
+func TestUpdateUsers(t *testing.T) {
+	testSetup()
+	usersRepository.On("UpdateUsers", mock.Anything).Return(usersDomain, nil)
+	t.Run("Test Case 4 | Valid Update", func(t *testing.T) {
+		_, err := usersUsecase.UpdateUsers(usersDomain)
+		assert.Nil(t, err)
+		assert.Equal(t, nil, err)
 	})
 }

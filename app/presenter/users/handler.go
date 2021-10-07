@@ -5,8 +5,10 @@ import (
 	"EzMusix/app/presenter/users/request"
 	"EzMusix/app/presenter/users/response"
 	"EzMusix/bussiness/users"
-	"fmt"
+	"errors"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -42,7 +44,6 @@ func (presenter *Presenter) Login(c echo.Context) error {
 	domain := reqUsers.ToDomain()
 	res, err := presenter.usersUC.Login(domain)
 	if err != nil {
-		fmt.Println(err.Error())
 		if err.Error() == "please fill all fields" {
 			return responseHandler.NewErrorResponse(c, http.StatusBadRequest, err)
 		}
@@ -68,4 +69,21 @@ func (presenter *Presenter) GetAllUsers(c echo.Context) error {
 		usersPlaylist = append(usersPlaylist, response.ToUsersPlaylist(val))
 	}
 	return responseHandler.NewSuccessResponse(c, http.StatusOK, usersPlaylist)
+}
+
+func (presenter *Presenter) UpdateUsers(c echo.Context) error {
+	id := c.FormValue("id")
+	if strings.TrimSpace(id) == "" {
+		return responseHandler.NewErrorResponse(c, http.StatusBadRequest, errors.New("missing required id"))
+	}
+	request := request.Users{}
+	c.Bind(&request)
+	domainReq := request.ToDomain()
+	idInt, _ := strconv.Atoi(id)
+	domainReq.Id = idInt
+	res, err := presenter.usersUC.UpdateUsers(domainReq)
+	if err != nil {
+		return responseHandler.NewErrorResponse(c, http.StatusInternalServerError, err)
+	}
+	return responseHandler.NewSuccessResponse(c, http.StatusOK, response.FromUsersUpdate(res))
 }

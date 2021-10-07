@@ -29,7 +29,7 @@ paths:
     post:
       tags:
         - users
-      summary: Add a new users
+      summary: Login users
       responses:
         '200':
           description: successful operation
@@ -53,10 +53,10 @@ paths:
                       token:
                         type: string
                         example: 'eyJhbGciOiJIUzI1NiIsInR5'
-        '204':
-          $ref: "#/components/responses/204"
         '400':
           $ref: "#/components/responses/400"
+        '404':
+          $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500"
       requestBody:
@@ -89,6 +89,8 @@ paths:
                         example: fahmi
         '400':
           $ref: "#/components/responses/400"
+        '404':
+          $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500"
       requestBody:
@@ -122,13 +124,10 @@ paths:
                         username:
                           type: string
                           example: 'heinz'
-        '204':
-          $ref: "#/components/responses/204"
+        '404':
+          $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500"
-      security:
-        - api_key:
-            - 'write:users'
 
 # Playlist 
   /playlists:
@@ -201,8 +200,8 @@ paths:
                               artist_name:
                                 type: string
                                 example: pamungkas
-        '204':
-          $ref: "#/components/responses/204"
+        '404':
+          $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500"
   '/playlist/{playlist_id}':
@@ -238,10 +237,11 @@ paths:
                       name:
                         type: integer
                         example: calm
-        '204':
-          $ref: "#/components/responses/204"
+        '404':
+          $ref: "#/components/responses/404"
         '500':
           $ref: "#/components/responses/500" 
+
 # Tracks
   /tracks:
     get:
@@ -277,10 +277,10 @@ paths:
                     example: "successful"
                   data:
                     type: object    
-                    properties:                
+                    properties:    
                       id:
                         type: integer
-                        example: fahmi
+                        example: 123
                       title:
                         type: string
                         example: 'to the bone'
@@ -292,13 +292,16 @@ paths:
                         example: 'blabla'
         '204':
           description: track not found
+      security:
+        - api_key:
+            - 'write:users'
 
 # Detail Playlist
   /detailPlaylist:
     post:
       tags:
         - detail playlist
-      summary: Create new playlist
+      summary: Add track to playlist
       responses:
         '200':
           description: successful operation
@@ -322,8 +325,8 @@ paths:
                       track_name:
                         type: string
                         example: 'to the bone'
-        '204':
-          description: track not found operation
+        '404':
+          $ref: "#/components/responses/404"
       requestBody:
         content:
           application/json:
@@ -354,7 +357,7 @@ paths:
       delete:
         tags:
           - detail playlist
-        summary: Delete playlist based on id
+        summary: Delete tracks on playlist
         description: this can be only done with logged users
         parameters:
         - name: playlist_id
@@ -386,41 +389,17 @@ paths:
                     data:
                       type: object
                       properties:
-                        name:
+                        playlist_name:
                           type: string
                           example: calm
                         track_name:
                           type: string
                           example: to the bone
-          '204':
-            description: data not found
-            content: 
-              application/json:
-                schema:
-                  type: object    
-                  properties:      
-                    status:
-                      type: integer
-                      example: 204
-                    message:
-                      type: string
-                      example: "data not found"
+          '404':
+            $ref: "#/components/responses/404"
   
 components:
   responses:
-    '204':
-      description: record not found
-      content:
-        application/json:
-          schema:
-            type: object    
-            properties:      
-              status:
-                type: integer
-                example: 204
-              message:
-                type: string
-                example: "record not found"
     '400':
       description: all request body not fill
       content:
@@ -434,6 +413,19 @@ components:
               message:
                 type: string
                 example: "please fill all field"
+    '404':
+      description: not found or duplicate
+      content:
+        application/json:
+          schema:
+            type: object    
+            properties:      
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: "duplicate or record not found"
     '500':
       description: "internal server error"
       content:

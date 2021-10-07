@@ -58,3 +58,14 @@ func (uc *UserUsecase) GetAllUsers(usersDomain Domain) ([]Domain, error) {
 	}
 	return res, nil
 }
+
+func (uc *UserUsecase) UpdateUsers(usersDomain Domain) (Domain, error) {
+	res, err := uc.userRepo.UpdateUsers(usersDomain)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return Domain{}, errors.New("record not found")
+		}
+		return Domain{}, err
+	}
+	return res, nil
+}

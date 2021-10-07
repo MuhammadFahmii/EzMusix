@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -25,7 +24,6 @@ func (log *LogMiddleware) Log(next echo.HandlerFunc) echo.HandlerFunc {
 		response := next(c)
 		log["response"] = c.Response().Status
 		coll.InsertOne(c.Request().Context(), log)
-		fmt.Println(log)
 		return response
 	}
 }

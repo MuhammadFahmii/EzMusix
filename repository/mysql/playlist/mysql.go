@@ -42,11 +42,11 @@ func (repo *PlaylistRepo) Get(playlistDomain playlists.Domain) ([]playlists.Doma
 
 func (repo *PlaylistRepo) Delete(playlistDomain playlists.Domain) (playlists.Domain, error) {
 	rec := fromDomain(playlistDomain)
-	if err := repo.DBConn.Where("id = ?", playlistDomain.Id).Delete(&rec).Error; err != nil {
+	if err := repo.DBConn.Where("id=?", playlistDomain.Id).First(&rec).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return playlists.Domain{}, errors.New("record not found")
 		}
-		return playlists.Domain{}, err
 	}
+	repo.DBConn.Where("id = ?", playlistDomain.Id).Delete(&rec)
 	return rec.toDomain(), nil
 }

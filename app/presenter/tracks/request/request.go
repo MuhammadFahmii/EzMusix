@@ -1,6 +1,8 @@
 package request
 
-import "EzMusix/bussiness/tracks"
+import (
+	"EzMusix/bussiness/tracks"
+)
 
 type Tracks struct {
 	TrackName  string `json:"track_name" query:"track_name"`

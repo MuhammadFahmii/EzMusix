@@ -15,14 +15,17 @@ func NewPlaylistUsecase(repo Repository) Usecase {
 func (playlistUseCase *PlaylistUsecase) Insert(playlist Domain) (Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Insert(playlist)
 	if err != nil {
-		return Domain{}, nil
+		return Domain{}, err
 	}
 	return res, nil
 }
 func (playlistUseCase *PlaylistUsecase) Delete(playlist Domain) (Domain, error) {
 	res, err := playlistUseCase.playlistRepo.Delete(playlist)
 	if err != nil {
-		return Domain{}, nil
+		if err.Error() == "record not found" {
+			return Domain{}, errors.New("record not found")
+		}
+		return Domain{}, err
 	}
 	return res, nil
 }
