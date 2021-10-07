@@ -3,12 +3,15 @@ package response
 import (
 	"EzMusix/bussiness/playlists"
 	"EzMusix/bussiness/tracks"
+	"time"
 )
 
 type Playlist struct {
-	Id    int             `json:"id"`
-	Name  string          `json:"name" form:"name"`
-	Track []tracks.Domain `json:",omitempty"`
+	Id        int             `json:"id"`
+	Name      string          `json:"name" form:"name"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
+	Track     []tracks.Domain `json:",omitempty"`
 }
 
 type AddPlaylist struct {
@@ -21,9 +24,11 @@ type DeletePlaylist struct {
 
 func FromDomain(pl playlists.Domain) Playlist {
 	return Playlist{
-		Id:    pl.Id,
-		Name:  pl.Name,
-		Track: pl.Tracks,
+		Id:        pl.Id,
+		Name:      pl.Name,
+		Track:     pl.Tracks,
+		CreatedAt: pl.CreatedAt,
+		UpdatedAt: pl.UpdatedAt,
 	}
 }
 

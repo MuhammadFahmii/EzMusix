@@ -29,6 +29,7 @@ func (handler *HandlerList) RouteRegister(e *echo.Echo) {
 	u.POST("/register", handler.UsersHandler.Register)
 	u.POST("/login", handler.UsersHandler.Login)
 	u.GET("", handler.UsersHandler.GetAllUsers, middleware.JWTWithConfig(handler.JWTMiddleware))
+	u.PUT("", handler.UsersHandler.UpdateUsers, middleware.JWTWithConfig(handler.JWTMiddleware))
 
 	p := e.Group("/playlists", middleware.JWTWithConfig(handler.JWTMiddleware))
 	p.GET("", handler.PlaylistHandler.Get)

@@ -1,6 +1,9 @@
 package tracks
 
-import "EzMusix/bussiness/tracks"
+import (
+	"EzMusix/bussiness/tracks"
+	"time"
+)
 
 type Track struct {
 	Id            int
@@ -9,12 +12,17 @@ type Track struct {
 	AlbumName     string
 	TrackRating   int
 	TrackShareUrl string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
+
 type Playlist struct {
-	Id     int
-	Name   string
-	UserID int
-	Tracks []Track `gorm:"many2many:detail_playlist"`
+	Id        int
+	Name      string
+	UserID    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Tracks    []Track `gorm:"many2many:detail_playlist"`
 }
 
 func FromDomain(tracks tracks.Domain) Track {
@@ -25,6 +33,8 @@ func FromDomain(tracks tracks.Domain) Track {
 		AlbumName:     tracks.AlbumName,
 		TrackRating:   tracks.TrackRating,
 		TrackShareUrl: tracks.TrackShareUrl,
+		CreatedAt:     tracks.CreatedAt,
+		UpdatedAt:     tracks.UpdatedAt,
 	}
 }
 
@@ -36,5 +46,7 @@ func ToDomain(track Track) tracks.Domain {
 		AlbumName:     track.AlbumName,
 		TrackRating:   track.TrackRating,
 		TrackShareUrl: track.TrackShareUrl,
+		CreatedAt:     track.CreatedAt,
+		UpdatedAt:     track.UpdatedAt,
 	}
 }

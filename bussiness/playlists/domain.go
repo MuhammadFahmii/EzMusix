@@ -2,13 +2,16 @@ package playlists
 
 import (
 	"EzMusix/bussiness/tracks"
+	"time"
 )
 
 type Domain struct {
-	Id     int
-	Name   string
-	UserID int
-	Tracks []tracks.Domain
+	Id        int
+	Name      string
+	UserID    int
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Tracks    []tracks.Domain
 }
 
 type Usecase interface {

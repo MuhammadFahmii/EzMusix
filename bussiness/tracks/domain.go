@@ -1,5 +1,7 @@
 package tracks
 
+import "time"
+
 type Domain struct {
 	Id            int
 	TrackName     string
@@ -7,6 +9,8 @@ type Domain struct {
 	AlbumName     string
 	TrackRating   int
 	TrackShareUrl string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 type TrackPlaylist struct {

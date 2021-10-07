@@ -56,3 +56,14 @@ func (usersRepo *UsersRepo) GetAllUsers(usersDomain users.Domain) ([]users.Domai
 	}
 	return domainPlaylist, nil
 }
+
+func (usersRepo *UsersRepo) UpdateUsers(usersDomain users.Domain) (users.Domain, error) {
+	rec := FromDomain(usersDomain)
+	if err := usersRepo.DBConn.Debug().Save(&rec).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return users.Domain{}, errors.New("record not found")
+		}
+		return users.Domain{}, err
+	}
+	return rec.toDomain(), nil
+}
